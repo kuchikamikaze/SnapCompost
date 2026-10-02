@@ -1,0 +1,4888 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f8fbf7">
+  <title>Wadahku — SnapCompost</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --green: #24734e;
+      --green-dark: #15583a;
+      --green-soft: #e8f4eb;
+      --mint: #f1f8f2;
+      --ink: #18251d;
+      --muted: #87938a;
+      --line: #e8eee9;
+      --orange: #eda63e;
+      --blue: #1179b7;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-height: 100%;
+      background: #eff2ef;
+    }
+
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      margin: 0;
+      color: var(--ink);
+      background: #eff2ef;
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button {
+      color: inherit;
+      font: inherit;
+    }
+
+    .phone {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      width: min(100%, 390px);
+      min-height: 100vh;
+      margin: 0 auto;
+      overflow: hidden;
+      background: #fff;
+      box-shadow: 0 12px 50px rgb(27 55 37 / 10%);
+    }
+
+    .status-bar {
+      position: relative;
+      display: flex;
+      flex: 0 0 29px;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 23px 0 24px;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: -.15px;
+    }
+
+    .notch {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 72px;
+      height: 17px;
+      transform: translateX(-50%);
+      border-radius: 0 0 12px 12px;
+      background: #101411;
+    }
+
+    .status-icons {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .status-icons svg {
+      display: block;
+    }
+
+    .app-header {
+      display: flex;
+      min-height: 47px;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 19px 5px;
+      border-bottom: 1px solid #f0f2ef;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      color: #21352a;
+      font-size: 15px;
+      font-weight: 750;
+      letter-spacing: -.5px;
+    }
+
+    .brand svg {
+      width: 20px;
+      height: 20px;
+      color: #347b55;
+    }
+
+    .notification {
+      position: relative;
+      display: grid;
+      width: 32px;
+      height: 32px;
+      place-items: center;
+      border: 0;
+      border-radius: 50%;
+      background: #f5f8f5;
+      cursor: pointer;
+    }
+
+    .notification svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .notification-dot {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      width: 7px;
+      height: 7px;
+      border: 1px solid white;
+      border-radius: 50%;
+      background: #f0a53b;
+    }
+
+    .brand-wadah-icon {
+      display: none;
+    }
+
+    .phone[data-screen="wadah"] .brand-home-icon {
+      display: none;
+    }
+
+    .phone[data-screen="wadah"] .brand-wadah-icon {
+      display: block;
+    }
+
+    .notification[hidden] {
+      display: none;
+    }
+
+    .brand-count {
+      margin-left: 1px;
+      padding: 4px 8px;
+      border-radius: 12px;
+      background: #e8f4eb;
+      color: #28754d;
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 0;
+    }
+
+    .notification-layer {
+      position: absolute;
+      z-index: 8;
+      inset: 76px 0 0;
+    }
+
+    .notification-layer[hidden] {
+      display: none;
+    }
+
+    .notification-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgb(24 37 29 / 35%);
+    }
+
+    .notification-panel {
+      position: relative;
+      z-index: 1;
+      overflow: hidden;
+      border: 1px solid #bfd3c3;
+      border-top: 0;
+      border-radius: 0 0 15px 15px;
+      background: #fff;
+      box-shadow: 0 7px 18px rgb(24 56 36 / 14%);
+    }
+
+    .notification-panel-header {
+      display: flex;
+      min-height: 39px;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px;
+      border-bottom: 1px solid #e5eee7;
+    }
+
+    .notification-panel-title {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .notification-panel-title svg {
+      width: 14px;
+      height: 14px;
+      color: #648071;
+    }
+
+    .notification-close {
+      display: grid;
+      width: 25px;
+      height: 25px;
+      place-items: center;
+      border: 0;
+      border-radius: 50%;
+      background: #f2f7f3;
+      color: #718278;
+      cursor: pointer;
+    }
+
+    .notification-close svg {
+      width: 13px;
+      height: 13px;
+    }
+
+    .notification-list {
+      display: grid;
+      gap: 1px;
+      padding: 4px 8px 7px;
+    }
+
+    .notification-item {
+      display: flex;
+      min-height: 49px;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 6px;
+      border-bottom: 1px solid #edf2ee;
+    }
+
+    .notification-item:last-child {
+      border-bottom: 0;
+    }
+
+    .notification-vessel-icon {
+      display: grid;
+      width: 27px;
+      height: 27px;
+      flex: 0 0 27px;
+      place-items: center;
+      border-radius: 50%;
+      background: #eff8f0;
+      color: #6aaa6d;
+    }
+
+    .notification-vessel-icon svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .notification-copy {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .notification-name {
+      display: block;
+      overflow: hidden;
+      font-size: 10px;
+      font-weight: 700;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .notification-description {
+      margin: 2px 0 0;
+      color: #78877c;
+      font-size: 8px;
+      line-height: 11px;
+    }
+
+    .notification-description strong {
+      color: #d69137;
+      font-weight: 600;
+    }
+
+    .notification-view {
+      min-width: 39px;
+      padding: 5px 8px;
+      border: 0;
+      border-radius: 12px;
+      background: #287b50;
+      color: white;
+      font-size: 8px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .notification-view:hover {
+      background: #1d6842;
+    }
+
+    main {
+      flex: 1;
+      padding: 8px 11px 105px;
+    }
+
+    .date {
+      margin: 0 0 17px 2px;
+      color: #98a198;
+      font-size: 10px;
+      line-height: 15px;
+    }
+
+    h1 {
+      margin: 0 0 13px 2px;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -.48px;
+      line-height: 21px;
+    }
+
+    .impact-card {
+      position: relative;
+      min-height: 128px;
+      overflow: hidden;
+      padding: 14px 12px 11px;
+      border: 1px solid #a9c9b1;
+      border-radius: 14px;
+      background: linear-gradient(110deg, #fff 12%, #fbfdfb 70%, #f4faf5);
+    }
+
+    .impact-copy {
+      position: relative;
+      z-index: 1;
+      max-width: 206px;
+      color: #35443a;
+      font-size: 10px;
+      line-height: 14px;
+    }
+
+    .impact-copy strong {
+      display: block;
+      margin-top: 3px;
+      color: #6e8b77;
+      font-size: 19px;
+      font-style: italic;
+      font-weight: 750;
+      letter-spacing: -.7px;
+      line-height: 23px;
+    }
+
+    .plant-art {
+      position: absolute;
+      top: 3px;
+      right: -10px;
+      width: 132px;
+      height: 121px;
+      color: #bdd5c4;
+      opacity: .9;
+    }
+
+    .stats {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      width: 179px;
+      flex-wrap: wrap;
+      gap: 4px 5px;
+      margin-top: 7px;
+    }
+
+    .stat {
+      display: inline-flex;
+      min-height: 14px;
+      align-items: center;
+      gap: 4px;
+      padding: 1px 5px 1px 6px;
+      border-radius: 12px;
+      background: #e8f3eb;
+      color: #39704e;
+      font-size: 7px;
+      font-weight: 750;
+      line-height: 11px;
+      white-space: nowrap;
+    }
+
+    .stat.total {
+      width: 100%;
+      justify-content: space-between;
+      max-width: 153px;
+      border-radius: 3px;
+      background: #e6f2f6;
+      color: #146c9c;
+    }
+
+    .stat:nth-child(2) {
+      background: #fff0db;
+      color: #ac741b;
+    }
+
+    .stat:nth-child(3) {
+      background: #e4f3e5;
+      color: #34714a;
+    }
+
+    .stat b {
+      display: inline-grid;
+      width: 12px;
+      height: 12px;
+      place-items: center;
+      border-radius: 50%;
+      background: #146e9c;
+      color: white;
+      font-size: 7px;
+    }
+
+    .stat:nth-child(2) b {
+      background: #d8912e;
+    }
+
+    .stat:nth-child(3) b {
+      background: #408254;
+    }
+
+    .section-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 11px 0 7px;
+      padding: 0 1px 0 2px;
+      color: #718278;
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: .3px;
+    }
+
+    .sort-button {
+      display: inline-flex;
+      min-height: 19px;
+      align-items: center;
+      gap: 3px;
+      padding: 2px 7px;
+      border: 1px solid #cddbd0;
+      border-radius: 12px;
+      background: #f9fcf9;
+      color: #668170;
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: .15px;
+      cursor: pointer;
+    }
+
+    .sort-button svg {
+      width: 11px;
+      height: 11px;
+      transition: transform .18s ease;
+    }
+
+    .sort-button[aria-expanded="true"] svg {
+      transform: rotate(180deg);
+    }
+
+    .sort-menu {
+      position: absolute;
+      z-index: 5;
+      right: 13px;
+      display: none;
+      width: 155px;
+      padding: 5px;
+      border: 1px solid #dce6dd;
+      border-radius: 9px;
+      background: white;
+      box-shadow: 0 6px 20px rgb(32 62 41 / 13%);
+    }
+
+    .sort-menu.open {
+      display: block;
+    }
+
+    .sort-menu button {
+      width: 100%;
+      padding: 7px 8px;
+      border: 0;
+      border-radius: 5px;
+      background: transparent;
+      color: #56645a;
+      font-size: 10px;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .sort-menu button:hover,
+    .sort-menu button[aria-selected="true"] {
+      background: #edf6ef;
+      color: var(--green);
+    }
+
+    .vessels {
+      display: grid;
+      gap: 7px;
+    }
+
+    .vessel-card {
+      min-height: 91px;
+      padding: 10px 9px 8px;
+      border: 1px solid #e6eee8;
+      border-radius: 13px;
+      background: #fff;
+      box-shadow: 0 2px 6px rgb(36 70 47 / 5%);
+    }
+
+    .vessel-top {
+      display: flex;
+      align-items: center;
+      min-height: 29px;
+      gap: 8px;
+    }
+
+    .vessel-icon {
+      display: grid;
+      width: 31px;
+      height: 31px;
+      flex: 0 0 31px;
+      place-items: center;
+      border-radius: 50%;
+      background: #f0f8f0;
+      color: #6aab6c;
+    }
+
+    .vessel-icon svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .vessel-info {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .vessel-name-line {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .vessel-name {
+      font-size: 11px;
+      font-weight: 650;
+      letter-spacing: -.15px;
+    }
+
+    .type-pill {
+      padding: 2px 6px;
+      border-radius: 9px;
+      background: #e7f4e9;
+      color: #4a8b58;
+      font-size: 7px;
+      line-height: 10px;
+    }
+
+    .type-pill.orange {
+      background: #fff0d9;
+      color: #ae7725;
+      font-weight: 700;
+    }
+
+    .chevron {
+      width: 14px;
+      height: 14px;
+      color: #8f9b92;
+    }
+
+    .progress-track {
+      height: 5px;
+      margin: 7px 0 5px;
+      overflow: hidden;
+      border-radius: 5px;
+      background: #e7f1eb;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: inherit;
+      background: #0877af;
+    }
+
+    .progress-fill.green {
+      background: #287f56;
+    }
+
+    .vessel-foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #718077;
+      font-size: 8px;
+      line-height: 12px;
+    }
+
+    .vessel-foot .ready {
+      color: #d7973b;
+      font-weight: 600;
+    }
+
+    .wadah-view {
+      min-height: 0;
+      flex: 1;
+      overflow-y: auto;
+      padding: 11px 10px 100px;
+      background: #f3faf4;
+      scrollbar-width: none;
+    }
+
+    .wadah-view[hidden] {
+      display: none;
+    }
+
+    .wadah-status-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px;
+      min-height: 34px;
+      padding: 3px;
+      border: 1px solid #edf2ee;
+      border-radius: 18px;
+      background: white;
+    }
+
+    .wadah-status-tab {
+      min-width: 0;
+      padding: 6px 8px;
+      border: 0;
+      border-radius: 14px;
+      background: transparent;
+      color: #64756a;
+      font-size: 9px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .wadah-status-tab[aria-selected="true"] {
+      background: #e7f4e9;
+      color: #32734d;
+    }
+
+    .wadah-controls {
+      display: grid;
+      gap: 8px;
+      margin: 10px 0 9px;
+    }
+
+    .wadah-filters,
+    .wadah-sorts {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .wadah-filter,
+    .wadah-sort {
+      flex: 0 0 auto;
+      min-height: 23px;
+      padding: 4px 9px;
+      border: 1px solid #e4ece5;
+      border-radius: 13px;
+      background: white;
+      color: #718076;
+      font-size: 8px;
+      line-height: 12px;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .wadah-filter[aria-pressed="true"] {
+      border-color: #287d52;
+      background: #287d52;
+      color: white;
+    }
+
+    .wadah-sort[aria-pressed="true"] {
+      border-color: #dfeae1;
+      background: #e9f4eb;
+      color: #377450;
+    }
+
+    .wadah-sorts {
+      gap: 6px;
+    }
+
+    .wadah-sorts::before {
+      content: "Urutkan:";
+      color: #7c897f;
+      font-size: 8px;
+      white-space: nowrap;
+    }
+
+    .wadah-cards {
+      display: grid;
+      gap: 8px;
+    }
+
+    .wadah-card {
+      min-height: 88px;
+      padding: 9px 9px 8px;
+      border: 1px solid #e7eee8;
+      border-radius: 14px;
+      background: #fff;
+      box-shadow: 0 2px 7px rgb(35 74 46 / 5%);
+    }
+
+    .wadah-card.ready {
+      border-color: #f0e6c9;
+      background: #fffdf5;
+    }
+
+    .wadah-card-top {
+      display: flex;
+      min-height: 31px;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .wadah-card .vessel-icon {
+      width: 30px;
+      height: 30px;
+      flex-basis: 30px;
+    }
+
+    .wadah-card .vessel-info {
+      flex: 1;
+    }
+
+    .wadah-card .vessel-name {
+      font-size: 10px;
+    }
+
+    .wadah-card .type-pill {
+      display: inline-block;
+      margin-top: 2px;
+    }
+
+    .wadah-percent {
+      margin-left: auto;
+      color: #24734e;
+      font-size: 14px;
+      font-weight: 750;
+      letter-spacing: -.4px;
+    }
+
+    .wadah-card.ready .wadah-percent {
+      color: #a77b25;
+    }
+
+    .wadah-card .progress-track {
+      height: 4px;
+      margin: 6px 0 5px;
+    }
+
+    .wadah-card.ready .progress-fill {
+      background: #e2b74d;
+    }
+
+    .wadah-card-foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #78857b;
+      font-size: 7px;
+      line-height: 11px;
+    }
+
+    .wadah-card-foot .ready-label {
+      color: #d39a36;
+      font-weight: 600;
+    }
+
+    .wadah-card-foot .waiting-label {
+      color: #d39a36;
+    }
+
+    .wadah-empty {
+      padding: 24px 16px;
+      border: 1px dashed #d9e6dc;
+      border-radius: 13px;
+      color: #738278;
+      font-size: 10px;
+      text-align: center;
+    }
+
+    .phone[data-workflow="camera"] .status-bar {
+      z-index: 14;
+      background: #090e0b;
+      color: #fff;
+    }
+
+    .phone[data-workflow="camera"] .app-header,
+    .phone[data-workflow="camera"] main,
+    .phone[data-workflow="camera"] .wadah-view,
+    .phone[data-workflow="camera"] .bottom-nav,
+    .phone[data-workflow="camera"] .home-indicator,
+    .phone[data-workflow="results"] .app-header,
+    .phone[data-workflow="results"] main,
+    .phone[data-workflow="results"] .wadah-view,
+    .phone[data-workflow="results"] .bottom-nav,
+    .phone[data-workflow="results"] .home-indicator,
+    .phone[data-workflow="confirm"] .app-header,
+    .phone[data-workflow="confirm"] main,
+    .phone[data-workflow="confirm"] .wadah-view,
+    .phone[data-workflow="confirm"] .bottom-nav,
+    .phone[data-workflow="confirm"] .home-indicator,
+    .phone[data-workflow="manual"] .app-header,
+    .phone[data-workflow="manual"] main,
+    .phone[data-workflow="manual"] .wadah-view,
+    .phone[data-workflow="manual"] .bottom-nav,
+    .phone[data-workflow="manual"] .home-indicator,
+    .phone[data-workflow="not-found"] .app-header,
+    .phone[data-workflow="not-found"] main,
+    .phone[data-workflow="not-found"] .wadah-view,
+    .phone[data-workflow="not-found"] .bottom-nav,
+    .phone[data-workflow="not-found"] .home-indicator,
+    .phone[data-workflow="no-detection"] .app-header,
+    .phone[data-workflow="no-detection"] main,
+    .phone[data-workflow="no-detection"] .wadah-view,
+    .phone[data-workflow="no-detection"] .bottom-nav,
+    .phone[data-workflow="no-detection"] .home-indicator {
+      display: none;
+    }
+
+    .phone[data-workflow="review"] .app-header,
+    .phone[data-workflow="review"] main,
+    .phone[data-workflow="review"] .wadah-view,
+    .phone[data-workflow="review"] .bottom-nav,
+    .phone[data-workflow="review"] .home-indicator,
+    .phone[data-workflow="quantity"] .app-header,
+    .phone[data-workflow="quantity"] main,
+    .phone[data-workflow="quantity"] .wadah-view,
+    .phone[data-workflow="quantity"] .bottom-nav,
+    .phone[data-workflow="quantity"] .home-indicator,
+    .phone[data-workflow="quantity-confirm"] .app-header,
+    .phone[data-workflow="quantity-confirm"] main,
+    .phone[data-workflow="quantity-confirm"] .wadah-view,
+    .phone[data-workflow="quantity-confirm"] .bottom-nav,
+    .phone[data-workflow="quantity-confirm"] .home-indicator,
+    .phone[data-workflow="type-select"] .app-header,
+    .phone[data-workflow="type-select"] main,
+    .phone[data-workflow="type-select"] .wadah-view,
+    .phone[data-workflow="type-select"] .bottom-nav,
+    .phone[data-workflow="type-select"] .home-indicator,
+    .phone[data-workflow="create-vessel"] .app-header,
+    .phone[data-workflow="create-vessel"] main,
+    .phone[data-workflow="create-vessel"] .wadah-view,
+    .phone[data-workflow="create-vessel"] .bottom-nav,
+    .phone[data-workflow="create-vessel"] .home-indicator,
+    .phone[data-workflow="vessel-detail"] .app-header,
+    .phone[data-workflow="vessel-detail"] main,
+    .phone[data-workflow="vessel-detail"] .wadah-view,
+    .phone[data-workflow="vessel-detail"] .bottom-nav,
+    .phone[data-workflow="vessel-detail"] .home-indicator,
+    .phone[data-workflow="vessel-ready"] .app-header,
+    .phone[data-workflow="vessel-ready"] main,
+    .phone[data-workflow="vessel-ready"] .wadah-view,
+    .phone[data-workflow="vessel-ready"] .bottom-nav,
+    .phone[data-workflow="vessel-ready"] .home-indicator {
+      display: none;
+    }
+
+    .workflow-view {
+      position: absolute;
+      z-index: 12;
+      inset: 29px 0 0;
+      overflow: hidden;
+      background: #f2f8f3;
+    }
+
+    .workflow-view[hidden] {
+      display: none;
+    }
+
+    .workflow-screen {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      flex-direction: column;
+      overflow: hidden;
+      background: #f2f8f3;
+    }
+
+    .workflow-screen[hidden] {
+      display: none;
+    }
+
+    .workflow-header {
+      display: flex;
+      min-height: 47px;
+      flex: 0 0 47px;
+      align-items: center;
+      gap: 11px;
+      padding: 0 15px;
+      background: #f2f8f3;
+      color: #27382d;
+    }
+
+    .workflow-header h2 {
+      margin: 0;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: -.2px;
+    }
+
+    .workflow-back {
+      display: grid;
+      width: 27px;
+      height: 27px;
+      flex: 0 0 27px;
+      place-items: center;
+      padding: 0;
+      border: 0;
+      border-radius: 50%;
+      background: #e9f3eb;
+      color: #5b8066;
+      cursor: pointer;
+    }
+
+    .workflow-back svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .camera-screen {
+      position: relative;
+      background: #080d0a;
+      color: white;
+    }
+
+    .camera-header {
+      display: flex;
+      min-height: 42px;
+      flex: 0 0 42px;
+      align-items: center;
+      justify-content: center;
+      padding: 0 12px;
+      font-size: 12px;
+      font-weight: 650;
+    }
+
+    .camera-close {
+      position: absolute;
+      top: 7px;
+      left: 10px;
+      display: grid;
+      width: 28px;
+      height: 28px;
+      place-items: center;
+      border: 1px solid rgb(255 255 255 / 15%);
+      border-radius: 50%;
+      background: rgb(255 255 255 / 12%);
+      color: #fff;
+      cursor: pointer;
+    }
+
+    .camera-close svg {
+      width: 15px;
+      height: 15px;
+    }
+
+    .camera-preview {
+      position: relative;
+      display: grid;
+      min-height: 0;
+      flex: 1;
+      place-items: center;
+      margin: 0 8px;
+      overflow: hidden;
+      border-radius: 11px;
+      background: #141b16;
+    }
+
+    .camera-preview video,
+    .camera-preview img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .camera-preview img[hidden],
+    .camera-preview video[hidden] {
+      display: none;
+    }
+
+    .camera-placeholder {
+      max-width: 245px;
+      padding: 24px;
+      color: #d1dad3;
+      font-size: 12px;
+      line-height: 1.55;
+      text-align: center;
+    }
+
+    .camera-placeholder strong {
+      display: block;
+      margin-bottom: 6px;
+      color: white;
+      font-size: 14px;
+    }
+
+    .camera-error {
+      display: block;
+      margin-top: 10px;
+      color: #f5c18b;
+      font-size: 10px;
+    }
+
+    .camera-error[hidden] {
+      display: none;
+    }
+
+    .camera-controls {
+      display: flex;
+      min-height: 94px;
+      flex: 0 0 94px;
+      align-items: center;
+      justify-content: space-evenly;
+      padding-bottom: 15px;
+    }
+
+    .camera-control {
+      display: grid;
+      width: 40px;
+      height: 40px;
+      place-items: center;
+      padding: 0;
+      border: 1px solid rgb(255 255 255 / 12%);
+      border-radius: 50%;
+      background: rgb(255 255 255 / 10%);
+      color: white;
+      cursor: pointer;
+    }
+
+    .camera-control svg {
+      width: 19px;
+      height: 19px;
+    }
+
+    .shutter-button {
+      display: grid;
+      width: 56px;
+      height: 56px;
+      place-items: center;
+      padding: 0;
+      border: 4px solid #dfe5e0;
+      border-radius: 50%;
+      background: white;
+      cursor: pointer;
+    }
+
+    .shutter-button span {
+      width: 42px;
+      height: 42px;
+      border: 1px solid #dce2dd;
+      border-radius: 50%;
+      background: #fff;
+    }
+
+    .shutter-button:disabled,
+    .camera-control:disabled {
+      cursor: not-allowed;
+      opacity: .45;
+    }
+
+    .camera-alternative {
+      position: absolute;
+      right: 9px;
+      bottom: 5px;
+      left: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      color: #c8d0ca;
+      font-size: 9px;
+    }
+
+    .camera-alternative button {
+      padding: 2px 0;
+      border: 0;
+      background: transparent;
+      color: #b7e1c1;
+      font-size: 9px;
+      font-weight: 650;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    .workflow-content {
+      min-height: 0;
+      flex: 1;
+      overflow-y: auto;
+      padding: 3px 10px 14px;
+      scrollbar-width: none;
+    }
+
+    [data-workflow-screen="results"] .workflow-content,
+    [data-workflow-screen="confirm"] .workflow-content {
+      display: flex;
+      flex-direction: column;
+    }
+
+    [data-workflow-screen="results"] .workflow-actions,
+    [data-workflow-screen="confirm"] .workflow-actions {
+      margin-top: auto;
+    }
+
+    .workflow-summary {
+      margin: 1px 1px 10px;
+      color: #6d7a70;
+      font-size: 9px;
+      line-height: 14px;
+    }
+
+    .detection-list,
+    .confirm-list {
+      display: grid;
+      gap: 7px;
+    }
+
+    .detection-card,
+    .confirm-card {
+      display: flex;
+      min-height: 58px;
+      align-items: center;
+      gap: 9px;
+      padding: 8px 10px;
+      border: 1px solid #e9efea;
+      border-radius: 12px;
+      background: #fff;
+    }
+
+    .waste-art {
+      display: grid;
+      width: 34px;
+      height: 34px;
+      flex: 0 0 34px;
+      place-items: center;
+      border-radius: 11px;
+      background: #fff6e9;
+      font-size: 18px;
+    }
+
+    .waste-art.green {
+      background: #e8f5e9;
+    }
+
+    .waste-art.yellow {
+      background: #fff4d9;
+    }
+
+    .waste-card-info {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .waste-name {
+      display: block;
+      color: #28352d;
+      font-size: 10px;
+      font-weight: 650;
+      line-height: 14px;
+    }
+
+    .waste-confidence {
+      height: 4px;
+      margin-top: 5px;
+      overflow: hidden;
+      border-radius: 4px;
+      background: #e6f0e9;
+    }
+
+    .waste-confidence span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: #34865a;
+    }
+
+    .waste-percent {
+      margin-left: 6px;
+      color: #617568;
+      font-size: 8px;
+    }
+
+    .workflow-actions {
+      display: grid;
+      gap: 6px;
+      padding: 9px 10px 13px;
+      background: #f2f8f3;
+    }
+
+    .workflow-primary,
+    .workflow-secondary {
+      display: flex;
+      min-height: 38px;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 12px;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      font-size: 10px;
+      font-weight: 650;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .workflow-primary {
+      background: #2d8054;
+      color: white;
+    }
+
+    .workflow-primary:hover:not(:disabled) {
+      background: #246e47;
+    }
+
+    .workflow-primary:disabled {
+      background: #9cbca5;
+      cursor: not-allowed;
+    }
+
+    .workflow-secondary {
+      border-color: #e6ede7;
+      background: white;
+      color: #35473a;
+    }
+
+    .workflow-content .workflow-actions {
+      padding: 12px 0 1px;
+    }
+
+    .confirm-check {
+      width: 17px;
+      height: 17px;
+      flex: 0 0 17px;
+      accent-color: #2d8054;
+      cursor: pointer;
+    }
+
+    .confirm-intro {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 2px 1px 10px;
+      color: #66766a;
+      font-size: 9px;
+    }
+
+    .confirm-intro button {
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: #2d8054;
+      font-size: 8px;
+      font-weight: 650;
+      cursor: pointer;
+    }
+
+    .review-list,
+    .quantity-confirm-list {
+      display: grid;
+      gap: 7px;
+    }
+
+    .quantity-confirm-card,
+    .recipe-card,
+    .material-row {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 9px 10px;
+      border: 1px solid #e5ede6;
+      border-radius: 11px;
+      background: white;
+    }
+
+    [data-workflow-screen="review"] .workflow-content {
+      padding: 10px 10px 14px;
+    }
+
+    .review-progress {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 1px 2px 16px;
+      color: #68786d;
+      font-size: 8px;
+      white-space: nowrap;
+    }
+
+    .review-progress-track {
+      height: 5px;
+      flex: 1;
+      overflow: hidden;
+      border-radius: 5px;
+      background: #e1eee4;
+    }
+
+    .review-progress-track span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: #34865a;
+      transition: width .2s ease;
+    }
+
+    .review-question-card {
+      overflow: hidden;
+      border: 1px solid #e9efea;
+      border-radius: 12px;
+      background: #fff;
+    }
+
+    .review-waste-picture {
+      display: grid;
+      min-height: 90px;
+      place-items: center;
+      border-bottom: 1px solid #e6ede7;
+      background: #fff;
+      font-size: 44px;
+    }
+
+    .review-waste-name {
+      margin: 0;
+      padding: 10px 11px;
+      color: #28352d;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .review-question {
+      margin: 17px 2px 15px;
+      color: #293b30;
+      font-size: 10px;
+      font-weight: 650;
+      line-height: 15px;
+      text-align: center;
+    }
+
+    .review-answer-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 7px;
+    }
+
+    .review-answer {
+      min-height: 39px;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      font-size: 10px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .review-answer.yes {
+      background: #fde5e5;
+      color: #b62935;
+    }
+
+    .review-answer.no {
+      background: #ddf8e9;
+      color: #28784c;
+    }
+
+    .review-rejected {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px 2px;
+      text-align: center;
+    }
+
+    .review-rejected-icon {
+      display: grid;
+      width: 60px;
+      height: 60px;
+      place-items: center;
+      margin-bottom: 14px;
+      border-radius: 50%;
+      background: #fde8e8;
+      color: #d72632;
+      font-size: 36px;
+      font-weight: 700;
+    }
+
+    .review-rejected h3 {
+      margin: 0 0 12px;
+      color: #293b30;
+      font-size: 12px;
+    }
+
+    .review-rejected p {
+      width: 100%;
+      margin: 0 0 15px;
+      padding: 12px;
+      border: 1px solid #f3d1d1;
+      border-radius: 10px;
+      background: #fff0f0;
+      color: #a34a50;
+      font-size: 9px;
+      line-height: 14px;
+    }
+
+    .review-rejected .workflow-primary {
+      width: 100%;
+    }
+
+    .quantity-progress {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 2px 2px 14px;
+      color: #6c7a70;
+      font-size: 8px;
+    }
+
+    .quantity-progress-track {
+      height: 4px;
+      flex: 1;
+      overflow: hidden;
+      border-radius: 5px;
+      background: #e5eee7;
+    }
+
+    .quantity-progress-track span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: #328255;
+    }
+
+    .quantity-card {
+      display: flex;
+      min-height: 145px;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 18px 14px;
+      border: 1px solid #e6eee7;
+      border-radius: 14px;
+      background: #fff;
+      text-align: center;
+    }
+
+    .quantity-card .waste-art {
+      width: 43px;
+      height: 43px;
+      margin-bottom: 6px;
+      font-size: 23px;
+    }
+
+    .quantity-name {
+      margin-bottom: 5px;
+      color: #293a2f;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .quantity-type {
+      margin-bottom: 16px;
+      padding: 4px 9px;
+      border-radius: 12px;
+      background: #fff2cf;
+      color: #98751e;
+      font-size: 8px;
+    }
+
+    .quantity-counter {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .quantity-counter button {
+      display: grid;
+      width: 32px;
+      height: 32px;
+      place-items: center;
+      border: 0;
+      border-radius: 50%;
+      background: #e9f4eb;
+      color: #27764d;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .quantity-counter button:last-child {
+      background: #2e8054;
+      color: white;
+    }
+
+    .quantity-value {
+      min-width: 35px;
+      color: #27764d;
+      font-size: 25px;
+      font-weight: 750;
+    }
+
+    .quantity-unit {
+      margin-top: 5px;
+      color: #76847a;
+      font-size: 9px;
+    }
+
+    .quantity-input {
+      display: flex;
+      align-items: baseline;
+      gap: 9px;
+      border-bottom: 1px solid #d7e4da;
+      padding: 2px 5px 5px;
+    }
+
+    .quantity-input input {
+      width: 125px;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: #31845a;
+      font: inherit;
+      font-size: 34px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .quantity-input span {
+      color: #718078;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .quantity-hint {
+      max-width: 220px;
+      margin: 10px auto 0;
+      color: #879289;
+      font-size: 8px;
+      line-height: 13px;
+    }
+
+    .quantity-confirm-card {
+      min-height: 38px;
+      padding: 7px 9px;
+      font-size: 8px;
+    }
+
+    .quantity-confirm-card .waste-art {
+      width: 21px;
+      height: 21px;
+      flex-basis: 21px;
+      border-radius: 50%;
+      font-size: 12px;
+    }
+
+    .quantity-confirm-card strong {
+      margin-left: auto;
+      color: #35483a;
+      font-size: 8px;
+    }
+
+    .recipe-list,
+    .materials-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .recipe-card {
+      min-height: 71px;
+      cursor: pointer;
+    }
+
+    .recipe-card[aria-pressed="true"] {
+      border-color: #318258;
+      box-shadow: 0 0 0 2px rgb(49 130 88 / 10%);
+    }
+
+    .recipe-card-icon {
+      display: grid;
+      width: 38px;
+      height: 38px;
+      flex: 0 0 38px;
+      place-items: center;
+      border-radius: 12px;
+      background: #e9f4eb;
+      font-size: 19px;
+    }
+
+    .recipe-card-info {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .recipe-card-info strong {
+      display: block;
+      color: #304035;
+      font-size: 10px;
+    }
+
+    .recipe-card-info span {
+      display: block;
+      margin-top: 3px;
+      color: #7a877d;
+      font-size: 8px;
+      line-height: 12px;
+    }
+
+    .recipe-card input {
+      accent-color: #2d8054;
+    }
+
+    .vessel-detail-content {
+      padding-top: 8px;
+    }
+
+    .vessel-detail-hero,
+    .vessel-section,
+    .vessel-ready-card {
+      padding: 13px;
+      border: 1px solid #e4ede6;
+      border-radius: 13px;
+      background: #fff;
+    }
+
+    .vessel-detail-hero {
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .vessel-detail-emoji {
+      display: grid;
+      width: 54px;
+      height: 54px;
+      place-items: center;
+      margin: 0 auto 7px;
+      border-radius: 17px;
+      background: #eaf5ec;
+      font-size: 28px;
+    }
+
+    .vessel-detail-hero h3,
+    .vessel-ready-card h3 {
+      margin: 0;
+      color: #293b30;
+      font-size: 14px;
+    }
+
+    .vessel-detail-subtitle {
+      margin: 5px 0 0;
+      color: #718076;
+      font-size: 9px;
+    }
+
+    .vessel-section {
+      margin-bottom: 9px;
+    }
+
+    .vessel-section h3 {
+      margin: 0 0 4px;
+      color: #2d4033;
+      font-size: 10px;
+    }
+
+    .vessel-section-kicker {
+      margin: 0 0 7px;
+      color: #748278;
+      font-size: 7px;
+      font-weight: 700;
+      letter-spacing: .35px;
+      text-transform: uppercase;
+    }
+
+    .vessel-recipe-row,
+    .vessel-material-summary {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #35483a;
+      font-size: 9px;
+    }
+
+    .vessel-recipe-icon {
+      display: grid;
+      width: 27px;
+      height: 27px;
+      flex: 0 0 27px;
+      place-items: center;
+      border: 1px solid #e5ebe6;
+      border-radius: 6px;
+      background: #f5f8f5;
+      font-size: 13px;
+    }
+
+    .vessel-recipe-row strong {
+      display: block;
+      font-size: 9px;
+    }
+
+    .vessel-recipe-row small {
+      display: block;
+      margin-top: 2px;
+      color: #7a877d;
+      font-size: 7px;
+    }
+
+    .vessel-material-rows {
+      display: grid;
+      gap: 0;
+      border-top: 1px solid #e8ede9;
+    }
+
+    .vessel-material-summary {
+      min-height: 30px;
+      justify-content: space-between;
+      border-bottom: 1px solid #edf1ee;
+      font-size: 8px;
+    }
+
+    .vessel-material-summary strong {
+      color: #26362c;
+      font-size: 8px;
+      white-space: nowrap;
+    }
+
+    .vessel-fermentation-card,
+    .vessel-mature-card {
+      margin-bottom: 9px;
+      padding: 12px;
+      border: 1px solid #e7eee8;
+      border-radius: 12px;
+      background: #fff;
+      text-align: center;
+    }
+
+    .vessel-phase-pill {
+      display: inline-flex;
+      min-height: 17px;
+      align-items: center;
+      padding: 2px 12px;
+      border-radius: 10px;
+      background: #dcf8e7;
+      color: #398253;
+      font-size: 7px;
+      font-weight: 700;
+    }
+
+    .vessel-phase-pill.mature {
+      background: #f9ad38;
+      color: #fff;
+    }
+
+    .vessel-phase-drop {
+      display: block;
+      margin: 3px auto;
+      font-size: 25px;
+      line-height: 30px;
+    }
+
+    .vessel-phase-number {
+      display: block;
+      color: #318158;
+      font-size: 25px;
+      font-weight: 750;
+      line-height: 28px;
+    }
+
+    .vessel-phase-caption {
+      margin: 3px 0 9px;
+      color: #78857b;
+      font-size: 8px;
+    }
+
+    .vessel-phase-progress {
+      height: 4px;
+      margin: 0 0 8px;
+      overflow: hidden;
+      border-radius: 5px;
+      background: #e3eee6;
+    }
+
+    .vessel-phase-progress span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: #34865a;
+    }
+
+    .vessel-estimate {
+      margin: 0;
+      color: #718076;
+      font-size: 7px;
+    }
+
+    .vessel-mature-card h3 {
+      margin: 2px 0 3px;
+      color: #efa435;
+      font-size: 16px;
+      font-weight: 750;
+    }
+
+    .vessel-mature-card p {
+      margin: 0;
+      color: #79847c;
+      font-size: 8px;
+    }
+
+    .vessel-harvest-button {
+      background: #f3a632;
+    }
+
+    .vessel-harvest-button:hover:not(:disabled) {
+      background: #df9223;
+    }
+
+    .vessel-section-note {
+      margin: 0 0 8px;
+      color: #7a877d;
+      font-size: 8px;
+      line-height: 12px;
+    }
+
+    .vessel-check-list,
+    .vessel-steps {
+      display: grid;
+      gap: 6px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .vessel-check-row {
+      display: flex;
+      min-height: 33px;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 8px;
+      border: 1px solid #edf1ed;
+      border-radius: 8px;
+      background: #fbfdfb;
+      color: #45564a;
+      font-size: 9px;
+      line-height: 13px;
+      cursor: pointer;
+    }
+
+    .vessel-check-row input {
+      width: 16px;
+      height: 16px;
+      flex: 0 0 16px;
+      accent-color: #2d8054;
+    }
+
+    .vessel-check-row:has(input:checked) {
+      border-color: #b8d9c0;
+      background: #f0f8f1;
+    }
+
+    .vessel-step {
+      display: grid;
+      grid-template-columns: 21px 1fr;
+      gap: 7px;
+      color: #56675b;
+      font-size: 8px;
+      line-height: 13px;
+    }
+
+    .vessel-step-number {
+      display: grid;
+      width: 20px;
+      height: 20px;
+      place-items: center;
+      border-radius: 50%;
+      background: #e8f4ea;
+      color: #2d8054;
+      font-size: 8px;
+      font-weight: 700;
+    }
+
+    .vessel-ready-card {
+      margin: auto 10px;
+      text-align: center;
+    }
+
+    .vessel-ready-icon {
+      display: grid;
+      width: 64px;
+      height: 64px;
+      place-items: center;
+      margin: 0 auto 12px;
+      border-radius: 50%;
+      background: #e8f6eb;
+      color: #2d8054;
+      font-size: 34px;
+    }
+
+    .vessel-ready-card p {
+      margin: 9px 0 14px;
+      color: #718076;
+      font-size: 9px;
+      line-height: 14px;
+    }
+
+    .vessel-card[role="button"],
+    .wadah-card[role="button"] {
+      cursor: pointer;
+    }
+
+    .vessel-card[role="button"]:focus-visible,
+    .wadah-card[role="button"]:focus-visible {
+      outline: 2px solid #34865a;
+      outline-offset: 2px;
+    }
+
+    .vessel-status-pill {
+      padding: 2px 6px;
+      border-radius: 9px;
+      background: #fff0d9;
+      color: #9c6b22;
+      font-size: 7px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .vessel-name-field {
+      display: grid;
+      gap: 5px;
+      margin-bottom: 13px;
+      color: #56675b;
+      font-size: 9px;
+      font-weight: 650;
+    }
+
+    .vessel-name-field input {
+      min-height: 37px;
+      padding: 0 10px;
+      border: 1px solid #dfe9e1;
+      border-radius: 9px;
+      background: white;
+      color: #29392e;
+      font: inherit;
+      font-size: 10px;
+    }
+
+    .materials-heading {
+      margin: 0 0 7px;
+      color: #647469;
+      font-size: 9px;
+      font-weight: 700;
+    }
+
+    .material-row {
+      min-height: 37px;
+      padding: 7px 9px;
+      color: #485b4d;
+      font-size: 9px;
+    }
+
+    .material-row span:last-child {
+      margin-left: auto;
+      color: #718077;
+      font-size: 8px;
+    }
+
+    .manual-note {
+      margin: 1px 0 12px;
+      padding: 11px 12px;
+      border: 1px solid #e1eee3;
+      border-radius: 13px;
+      background: #eaf5ec;
+      color: #6c7a6f;
+      font-size: 9px;
+      line-height: 14px;
+    }
+
+    .manual-search-label {
+      display: block;
+      margin: 0 0 5px 3px;
+      color: #56675b;
+      font-size: 9px;
+      font-weight: 650;
+    }
+
+    .manual-search-wrap {
+      position: relative;
+    }
+
+    .manual-search {
+      display: flex;
+      width: 100%;
+      min-height: 39px;
+      align-items: center;
+      gap: 7px;
+      padding: 0 11px;
+      border: 1px solid #e5ece6;
+      border-radius: 11px;
+      background: white;
+      color: #657369;
+    }
+
+    .manual-search svg {
+      width: 15px;
+      height: 15px;
+      flex: 0 0 15px;
+    }
+
+    .manual-search input {
+      width: 100%;
+      min-width: 0;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: #29392e;
+      font: inherit;
+      font-size: 10px;
+    }
+
+    .manual-search input::placeholder {
+      color: #99a49b;
+    }
+
+    .manual-suggestions {
+      display: grid;
+      margin-top: 7px;
+      overflow: hidden;
+      border: 1px solid #c4d8c8;
+      border-radius: 11px;
+      background: #fff;
+    }
+
+    .manual-suggestions[hidden] {
+      display: none;
+    }
+
+    .manual-suggestion {
+      display: flex;
+      min-height: 32px;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 10px;
+      border: 0;
+      border-bottom: 1px solid #e6eee7;
+      background: white;
+      color: #4c5f51;
+      font-size: 9px;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .manual-suggestion:last-child {
+      border-bottom: 0;
+    }
+
+    .manual-suggestion:hover {
+      background: #f1f8f2;
+    }
+
+    .manual-suggestion svg {
+      width: 12px;
+      height: 12px;
+      color: #498263;
+    }
+
+    .manual-picked {
+      display: grid;
+      gap: 5px;
+      margin-top: 10px;
+    }
+
+    .manual-picked:empty {
+      display: none;
+    }
+
+    .manual-picked-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 8px 10px;
+      border: 1px solid #e2ece3;
+      border-radius: 9px;
+      background: white;
+      color: #33483a;
+      font-size: 9px;
+    }
+
+    .manual-picked-item button {
+      border: 0;
+      background: transparent;
+      color: #859188;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .manual-find {
+      position: absolute;
+      right: 10px;
+      bottom: 12px;
+      left: 10px;
+    }
+
+    .manual-not-found {
+      align-items: stretch;
+      padding: 0 14px 18px;
+    }
+
+    .not-found-body {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      justify-content: center;
+      padding-bottom: 56px;
+      text-align: center;
+    }
+
+    .not-found-face {
+      display: grid;
+      width: 78px;
+      height: 78px;
+      align-self: center;
+      place-items: center;
+      margin-bottom: 16px;
+      border-radius: 50%;
+      background: #fff2c8;
+      font-size: 41px;
+    }
+
+    .not-found-body h3,
+    .no-detection-dialog h3 {
+      margin: 0 0 9px;
+      color: #2c4032;
+      font-size: 15px;
+    }
+
+    .not-found-body p,
+    .no-detection-dialog p {
+      margin: 0;
+      color: #78847a;
+      font-size: 10px;
+      line-height: 16px;
+    }
+
+    .not-found-actions {
+      display: grid;
+      gap: 7px;
+    }
+
+    .no-detection-screen {
+      position: relative;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgb(15 23 18 / 45%);
+    }
+
+    .no-detection-dialog {
+      width: 100%;
+      padding: 23px 18px 16px;
+      border-radius: 17px;
+      background: white;
+      box-shadow: 0 14px 40px rgb(12 33 19 / 20%);
+      text-align: center;
+    }
+
+    .no-detection-illustration {
+      display: grid;
+      width: 62px;
+      height: 62px;
+      place-items: center;
+      margin: 0 auto 12px;
+      border-radius: 50%;
+      background: #fff3d0;
+      color: #d7a63a;
+      font-size: 32px;
+    }
+
+    .no-detection-dialog .workflow-actions {
+      padding: 16px 0 0;
+      background: transparent;
+    }
+
+    .workflow-error {
+      margin: 0 10px;
+      padding: 8px 10px;
+      border: 1px solid #f0d5c6;
+      border-radius: 9px;
+      background: #fff5ef;
+      color: #984d35;
+      font-size: 9px;
+      line-height: 13px;
+    }
+
+    .workflow-error[hidden] {
+      display: none;
+    }
+
+    .toast {
+      z-index: 20;
+    }
+
+    .bottom-nav {
+      position: absolute;
+      z-index: 4;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      display: grid;
+      height: 75px;
+      grid-template-columns: 1fr 1fr 1fr;
+      align-items: end;
+      padding: 0 22px 12px;
+      border-top: 1px solid #edf1ee;
+      background: rgb(255 255 255 / 97%);
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      justify-content: flex-end;
+      gap: 3px;
+      min-height: 44px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: #71877a;
+      font-size: 9px;
+      cursor: pointer;
+    }
+
+    .nav-item svg {
+      width: 21px;
+      height: 21px;
+    }
+
+    .nav-item.active {
+      color: #24794f;
+    }
+
+    .nav-item.active svg {
+      fill: #287c51;
+      stroke: #287c51;
+    }
+
+    .nav-item.camera {
+      justify-content: center;
+      gap: 2px;
+      padding-top: 2px;
+    }
+
+    .camera-button {
+      display: grid;
+      width: 44px;
+      height: 44px;
+      margin-top: -20px;
+      place-items: center;
+      border: 3px solid white;
+      border-radius: 50%;
+      background: #258052;
+      color: white;
+      box-shadow: 0 3px 9px rgb(23 78 46 / 23%);
+    }
+
+    .camera-button svg {
+      width: 19px;
+      height: 19px;
+    }
+
+    .camera-label {
+      font-size: 9px;
+    }
+
+    .home-indicator {
+      position: absolute;
+      z-index: 6;
+      bottom: 4px;
+      left: 50%;
+      width: 108px;
+      height: 4px;
+      transform: translateX(-50%);
+      border-radius: 4px;
+      background: #a9aea9;
+      pointer-events: none;
+    }
+
+    .toast {
+      position: absolute;
+      z-index: 10;
+      right: 20px;
+      bottom: 87px;
+      left: 20px;
+      padding: 11px 14px;
+      transform: translateY(8px);
+      border-radius: 10px;
+      background: #203b2a;
+      color: white;
+      font-size: 12px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s ease, transform .2s ease;
+    }
+
+    .toast.visible {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    @media (min-width: 480px) and (min-height: 700px) {
+      .phone {
+        min-height: min(100vh, 844px);
+        margin-top: max(0px, calc((100vh - 844px) / 2));
+        border-radius: 25px;
+      }
+    }
+
+    @media (max-height: 700px) {
+      .phone {
+        min-height: 700px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="phone" data-screen="home">
+    <div class="status-bar" aria-label="Status ponsel">
+      <span>9:41</span>
+      <span class="notch" aria-hidden="true"></span>
+      <span class="status-icons" aria-hidden="true">
+        <span style="font-size:8px;font-weight:600">5G</span>
+        <svg width="13" height="10" viewBox="0 0 16 12" fill="none">
+          <path d="M1 4.2C4.9.7 11.1.7 15 4.2M3.6 6.8c2.5-2.2 6.3-2.2 8.8 0M6.3 9.3c1-.9 2.4-.9 3.4 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>
+        <svg width="17" height="10" viewBox="0 0 20 12" fill="none">
+          <rect x=".7" y=".7" width="16" height="10.6" rx="2" stroke="currentColor" stroke-width="1.2"/>
+          <path d="M18 4v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <rect x="2.5" y="2.5" width="12.5" height="7" rx="1" fill="currentColor"/>
+        </svg>
+      </span>
+    </div>
+
+    <header class="app-header">
+      <div class="brand">
+        <svg class="brand-home-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M20.6 3.8C11.5 3.6 5.4 6.2 4 11.4c-.8 3.1 1.3 5.8 4.4 5.4 4.6-.5 9.6-6 12.2-13Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+          <path d="M2.8 20.5c2.2-5.6 6-9.2 11.4-11.7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <svg class="brand-wadah-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="m12 2.8 8 4.5v9.4l-8 4.5-8-4.5V7.3l8-4.5Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+          <path d="m4.3 7.5 7.7 4.4 7.7-4.4M12 12v9" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+        </svg>
+        <span id="brand-name">Wadahku</span>
+        <span class="brand-count" id="brand-count" hidden>5 wadah</span>
+      </div>
+      <button class="notification" type="button" aria-label="Buka notifikasi" aria-haspopup="dialog" aria-expanded="false" aria-controls="notification-layer">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9ZM10 21h4" stroke="#53655a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="notification-dot"></span>
+      </button>
+    </header>
+
+    <div class="notification-layer" id="notification-layer" hidden>
+      <div class="notification-backdrop" data-close-notifications aria-hidden="true"></div>
+      <section class="notification-panel" role="dialog" aria-modal="true" aria-labelledby="notification-title">
+        <div class="notification-panel-header">
+          <div class="notification-panel-title" id="notification-title">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9ZM10 21h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>Notifikasi</span>
+          </div>
+          <button class="notification-close" type="button" aria-label="Tutup notifikasi" data-close-notifications>
+            <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="m4 4 8 8m0-8-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+        <div class="notification-list">
+          <article class="notification-item">
+            <span class="notification-vessel-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M12.2 2.7c-2.5 3.2-4.5 5.7-4.5 8.4a4.5 4.5 0 0 0 9 0c0-2.7-2-5.2-4.5-8.4Z" fill="#8bd0e6" stroke="#53a9c5" stroke-width="1.2"/>
+                <path d="M12.2 9.6c-1.2 1.6-1.9 2.6-1.9 3.7a1.9 1.9 0 0 0 3.8 0c0-1.1-.7-2.1-1.9-3.7Z" fill="#fff" opacity=".85"/>
+              </svg>
+            </span>
+            <div class="notification-copy">
+              <span class="notification-name">Eco_Enzim1</span>
+              <p class="notification-description">Eco Enzim · <strong>Siap dipanen!</strong></p>
+            </div>
+            <button class="notification-view" type="button" data-notification-name="Eco_Enzim1">Lihat</button>
+          </article>
+          <article class="notification-item">
+            <span class="notification-vessel-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M18.7 4.1C11.1 4 5.7 6.4 4.5 10.8c-.7 2.7 1.1 5 3.8 4.7 4-.4 8.3-4.8 10.4-11.4Z" fill="#a8d99a" stroke="#79b875" stroke-width="1.1" stroke-linejoin="round"/>
+                <path d="M3.5 19c1.8-4.8 5-7.9 9.7-10" stroke="#73ab6c" stroke-width="1.2" stroke-linecap="round"/>
+              </svg>
+            </span>
+            <div class="notification-copy">
+              <span class="notification-name">Kompos3</span>
+              <p class="notification-description">Kompos · <strong>Siap dipanen!</strong></p>
+            </div>
+            <button class="notification-view" type="button" data-notification-name="Kompos3">Lihat</button>
+          </article>
+        </div>
+      </section>
+    </div>
+
+    <main>
+      <p class="date">5 Juli 2026</p>
+      <h1>Selamat datang, Budiman!</h1>
+
+      <section class="impact-card" aria-label="Dampak pengomposanmu">
+        <div class="impact-copy">
+          Kamu sudah memanfaatkan 5 kg<br>
+          sampah organik di bulan ini
+          <strong>Pertahankan!</strong>
+        </div>
+        <svg class="plant-art" viewBox="0 0 140 128" fill="none" aria-hidden="true">
+          <g stroke="currentColor" stroke-width="3.1" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M123 8C83 24 61 56 46 119"/>
+            <path d="M83 25C81 7 94 0 113 1c-1 18-11 29-30 29"/>
+            <path d="M67 56C46 40 49 22 64 12c19 12 22 28 12 42"/>
+            <path d="M51 81C30 70 25 52 36 38c19 6 29 22 22 39"/>
+            <path d="M90 52c4-21 19-29 38-25-3 20-17 31-37 31"/>
+            <path d="M48 106c-17-1-27-13-25-29 17-2 29 7 32 24"/>
+            <path d="M71 101c9-18 25-23 41-14-8 17-22 24-39 19"/>
+          </g>
+          <g fill="#f8fcf8" stroke="currentColor" stroke-width="2.7">
+            <path d="M88 17c-1-14 10-20 25-19-1 14-9 23-24 23"/>
+            <path d="M57 50C39 36 43 22 55 14c16 10 20 23 10 36"/>
+            <path d="M43 75C24 65 21 50 31 39c17 5 26 19 19 35"/>
+            <path d="M90 50c4-18 17-25 33-21-3 17-15 27-33 26"/>
+            <path d="M43 101c-15-1-23-11-21-25 15-2 25 6 28 21"/>
+            <path d="M69 99c8-16 22-20 36-12-7 15-19 21-35 17"/>
+          </g>
+        </svg>
+        <div class="stats">
+          <span class="stat total">TOTAL WADAH <b>3</b></span>
+          <span class="stat">PROSES <b>2</b></span>
+          <span class="stat">MATANG <b>1</b></span>
+        </div>
+      </section>
+
+      <div class="section-heading">
+        <span>WADAH AKTIF ANDA:</span>
+        <button class="sort-button" id="sort-toggle" type="button" aria-expanded="false" aria-controls="sort-menu">
+          <span>PROGRES</span>
+          <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="m4 6 4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="8" cy="8" r="7" stroke="currentColor"/>
+          </svg>
+        </button>
+      </div>
+      <div class="sort-menu" id="sort-menu" role="listbox" aria-label="Urutkan wadah">
+        <button type="button" role="option" aria-selected="true">Progres tertinggi</button>
+        <button type="button" role="option" aria-selected="false">Progres terendah</button>
+        <button type="button" role="option" aria-selected="false">Terbaru dibuat</button>
+        <button type="button" role="option" aria-selected="false">Terlama dibuat</button>
+      </div>
+
+      <section class="vessels" aria-label="Daftar wadah aktif">
+        <article class="vessel-card">
+          <div class="vessel-top">
+            <span class="vessel-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M12.2 2.7c-2.5 3.2-4.5 5.7-4.5 8.4a4.5 4.5 0 0 0 9 0c0-2.7-2-5.2-4.5-8.4Z" fill="#8bd0e6" stroke="#53a9c5" stroke-width="1.2"/>
+                <path d="M12.2 9.6c-1.2 1.6-1.9 2.6-1.9 3.7a1.9 1.9 0 0 0 3.8 0c0-1.1-.7-2.1-1.9-3.7Z" fill="#fff" opacity=".85"/>
+              </svg>
+            </span>
+            <div class="vessel-info">
+              <div class="vessel-name-line">
+                <span class="vessel-name">Eco_Enzim1</span>
+                <span class="type-pill orange">MATANG</span>
+              </div>
+              <span class="type-pill">Eco Enzim</span>
+            </div>
+            <svg class="chevron" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <path d="m7 4 6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="progress-track" aria-label="Progres 100%"><div class="progress-fill" style="width:100%"></div></div>
+          <div class="vessel-foot"><span>Hari ke-90 dari 90</span><span class="ready">Siap dipanen!</span></div>
+        </article>
+
+        <article class="vessel-card">
+          <div class="vessel-top">
+            <span class="vessel-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M18.7 4.1C11.1 4 5.7 6.4 4.5 10.8c-.7 2.7 1.1 5 3.8 4.7 4-.4 8.3-4.8 10.4-11.4Z" fill="#a8d99a" stroke="#79b875" stroke-width="1.1" stroke-linejoin="round"/>
+                <path d="M3.5 19c1.8-4.8 5-7.9 9.7-10" stroke="#73ab6c" stroke-width="1.2" stroke-linecap="round"/>
+              </svg>
+            </span>
+            <div class="vessel-info">
+              <div class="vessel-name-line"><span class="vessel-name">Kompos1</span></div>
+              <span class="type-pill">Kompos</span>
+            </div>
+            <svg class="chevron" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <path d="m7 4 6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="progress-track" aria-label="Progres 42%"><div class="progress-fill green" style="width:42%"></div></div>
+          <div class="vessel-foot"><span>Hari ke-12 dari 30</span><span>+18 hari lagi</span></div>
+        </article>
+
+        <article class="vessel-card">
+          <div class="vessel-top">
+            <span class="vessel-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M18.7 4.1C11.1 4 5.7 6.4 4.5 10.8c-.7 2.7 1.1 5 3.8 4.7 4-.4 8.3-4.8 10.4-11.4Z" fill="#a8d99a" stroke="#79b875" stroke-width="1.1" stroke-linejoin="round"/>
+                <path d="M3.5 19c1.8-4.8 5-7.9 9.7-10" stroke="#73ab6c" stroke-width="1.2" stroke-linecap="round"/>
+              </svg>
+            </span>
+            <div class="vessel-info">
+              <div class="vessel-name-line"><span class="vessel-name">Kompos1</span></div>
+              <span class="type-pill">Kompos</span>
+            </div>
+            <svg class="chevron" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <path d="m7 4 6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="progress-track" aria-label="Progres 42%"><div class="progress-fill green" style="width:42%"></div></div>
+          <div class="vessel-foot"><span>Hari ke-12 dari 30</span><span>+18 hari lagi</span></div>
+        </article>
+      </section>
+    </main>
+
+    <section class="wadah-view" id="wadah-view" aria-label="Semua wadah" hidden>
+      <div class="wadah-status-tabs" role="tablist" aria-label="Status wadah">
+        <button class="wadah-status-tab" type="button" role="tab" data-status-filter="active" aria-selected="true">Masih Aktif</button>
+        <button class="wadah-status-tab" type="button" role="tab" data-status-filter="harvested" aria-selected="false">Sudah Dipanen</button>
+      </div>
+
+      <div class="wadah-controls">
+        <div class="wadah-filters" role="group" aria-label="Filter jenis wadah">
+          <button class="wadah-filter" type="button" data-type-filter="all" aria-pressed="true">Semua</button>
+          <button class="wadah-filter" type="button" data-type-filter="Kompos" aria-pressed="false">Kompos</button>
+          <button class="wadah-filter" type="button" data-type-filter="Eco Enzim" aria-pressed="false">Eco Enzim</button>
+        </div>
+        <div class="wadah-sorts" role="group" aria-label="Urutkan wadah">
+          <button class="wadah-sort" type="button" data-sort="progress" aria-pressed="true">Progres</button>
+          <button class="wadah-sort" type="button" data-sort="newest" aria-pressed="false">Terbaru</button>
+          <button class="wadah-sort" type="button" data-sort="oldest" aria-pressed="false">Terlama</button>
+        </div>
+      </div>
+
+      <div class="wadah-cards" id="wadah-cards">
+        <article class="wadah-card ready" data-status="active" data-type="Eco Enzim" data-progress="100" data-created="5">
+          <div class="wadah-card-top">
+            <span class="vessel-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M12.2 2.7c-2.5 3.2-4.5 5.7-4.5 8.4a4.5 4.5 0 0 0 9 0c0-2.7-2-5.2-4.5-8.4Z" fill="#8bd0e6" stroke="#53a9c5" stroke-width="1.2"/>
+                <path d="M12.2 9.6c-1.2 1.6-1.9 2.6-1.9 3.7a1.9 1.9 0 0 0 3.8 0c0-1.1-.7-2.1-1.9-3.7Z" fill="#fff" opacity=".85"/>
+              </svg>
+            </span>
+            <div class="vessel-info">
+              <div class="vessel-name-line"><span class="vessel-name">Eco_Enzim1</span><span class="type-pill orange">MATANG</span></div>
+              <span class="type-pill">Eco Enzim</span>
+            </div>
+            <span class="wadah-percent">100%</span>
+          </div>
+          <div class="progress-track" aria-label="Progres 100%"><div class="progress-fill" style="width:100%"></div></div>
+          <div class="wadah-card-foot"><span>Hari ke-90 dari 90</span><span class="ready-label">Siap dipanen!</span></div>
+        </article>
+
+        <article class="wadah-card ready" data-status="active" data-type="Kompos" data-progress="100" data-created="4">
+          <div class="wadah-card-top">
+            <span class="vessel-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M18.7 4.1C11.1 4 5.7 6.4 4.5 10.8c-.7 2.7 1.1 5 3.8 4.7 4-.4 8.3-4.8 10.4-11.4Z" fill="#a8d99a" stroke="#79b875" stroke-width="1.1" stroke-linejoin="round"/>
+                <path d="M3.5 19c1.8-4.8 5-7.9 9.7-10" stroke="#73ab6c" stroke-width="1.2" stroke-linecap="round"/>
+              </svg>
+            </span>
+            <div class="vessel-info">
+              <div class="vessel-name-line"><span class="vessel-name">Kompos3</span><span class="type-pill orange">MATANG</span></div>
+              <span class="type-pill">Kompos</span>
+            </div>
+            <span class="wadah-percent">100%</span>
+          </div>
+          <div class="progress-track" aria-label="Progres 100%"><div class="progress-fill green" style="width:100%"></div></div>
+          <div class="wadah-card-foot"><span>Hari ke-30 dari 30</span><span class="ready-label">Siap dipanen!</span></div>
+        </article>
+
+        <article class="wadah-card" data-status="active" data-type="Kompos" data-progress="90" data-created="3">
+          <div class="wadah-card-top">
+            <span class="vessel-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M18.7 4.1C11.1 4 5.7 6.4 4.5 10.8c-.7 2.7 1.1 5 3.8 4.7 4-.4 8.3-4.8 10.4-11.4Z" fill="#a8d99a" stroke="#79b875" stroke-width="1.1" stroke-linejoin="round"/>
+                <path d="M3.5 19c1.8-4.8 5-7.9 9.7-10" stroke="#73ab6c" stroke-width="1.2" stroke-linecap="round"/>
+              </svg>
+            </span>
+            <div class="vessel-info">
+              <div class="vessel-name-line"><span class="vessel-name">Kompos2</span></div>
+              <span class="type-pill">Kompos</span>
+            </div>
+            <span class="wadah-percent">90%</span>
+          </div>
+          <div class="progress-track" aria-label="Progres 90%"><div class="progress-fill green" style="width:90%"></div></div>
+          <div class="wadah-card-foot"><span>Hari ke-27 dari 30</span><span>+3 hari lagi</span></div>
+        </article>
+
+        <article class="wadah-card" data-status="active" data-type="Kompos" data-progress="42" data-created="2">
+          <div class="wadah-card-top">
+            <span class="vessel-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M15.5 5.2C9 5.1 4.4 7.2 3.4 11c-.6 2.3 1 4.3 3.3 4 3.4-.3 7.1-4.1 8.8-9.8Z" fill="#b7dda7" stroke="#79b875" stroke-width="1.1" stroke-linejoin="round"/>
+                <path d="M6.5 18.7c1.4-3.8 4-6.3 7.7-8" stroke="#73ab6c" stroke-width="1.2" stroke-linecap="round"/>
+                <path d="M17.7 7.2c2.7 2.9 3.8 5.1 3.3 6.6-.5 1.6-2.3 1.8-3.3.6-1-1.3-1-3.7 0-7.2Z" fill="#9ed9e7" stroke="#69b8c9" stroke-width="1.1"/>
+              </svg>
+            </span>
+            <div class="vessel-info">
+              <div class="vessel-name-line"><span class="vessel-name">Kompos3</span></div>
+              <span class="type-pill">Kompos</span>
+            </div>
+          </div>
+          <div class="wadah-card-foot"><span class="waiting-label">Menunggu bahan pendukung dilengkapi</span></div>
+        </article>
+
+        <article class="wadah-card" data-status="harvested" data-type="Kompos" data-progress="100" data-created="0" hidden>
+          <div class="wadah-card-top">
+            <span class="vessel-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M18.7 4.1C11.1 4 5.7 6.4 4.5 10.8c-.7 2.7 1.1 5 3.8 4.7 4-.4 8.3-4.8 10.4-11.4Z" fill="#a8d99a" stroke="#79b875" stroke-width="1.1" stroke-linejoin="round"/>
+                <path d="M3.5 19c1.8-4.8 5-7.9 9.7-10" stroke="#73ab6c" stroke-width="1.2" stroke-linecap="round"/>
+              </svg>
+            </span>
+            <div class="vessel-info">
+              <div class="vessel-name-line"><span class="vessel-name">Kompos1</span><span class="type-pill">DIPANEN</span></div>
+              <span class="type-pill">Kompos</span>
+            </div>
+            <span class="wadah-percent">100%</span>
+          </div>
+          <div class="progress-track" aria-label="Progres 100%"><div class="progress-fill green" style="width:100%"></div></div>
+          <div class="wadah-card-foot"><span>Hari ke-30 dari 30</span><span class="ready-label">Sudah dipanen</span></div>
+        </article>
+      </div>
+      <p class="wadah-empty" id="wadah-empty" hidden>Tidak ada wadah untuk filter ini.</p>
+    </section>
+
+    <section class="workflow-view" id="workflow-view" aria-label="Kamera dan input sampah" hidden>
+      <div class="workflow-screen camera-screen" data-workflow-screen="camera" hidden>
+        <header class="camera-header">
+          <button class="camera-close" type="button" aria-label="Tutup kamera" data-workflow-back>
+            <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m5 5 10 10m0-10L5 15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          </button>
+          <span>Foto Sampah</span>
+        </header>
+        <div class="camera-preview">
+          <video id="camera-video" autoplay playsinline muted hidden></video>
+          <img id="camera-image-preview" alt="Foto sampah yang dipilih" hidden>
+          <div class="camera-placeholder" id="camera-placeholder">
+            <strong>Kamera belum aktif</strong>
+            Izinkan akses kamera atau pilih foto dari perangkat.
+            <span class="camera-error" id="camera-error" role="status" hidden></span>
+          </div>
+        </div>
+        <div class="camera-controls">
+          <button class="camera-control" id="camera-flash" type="button" aria-label="Nyalakan lampu flash" title="Flash" disabled>
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m13 2-8 12h6l-1 8 9-13h-6l1-7Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          </button>
+          <button class="shutter-button" id="camera-capture" type="button" aria-label="Ambil foto" disabled><span></span></button>
+          <button class="camera-control" id="camera-switch" type="button" aria-label="Ganti kamera" title="Ganti kamera" disabled>
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5M5.6 9A7 7 0 0 1 18 6.5L20 8M4 16l2-1.5A7 7 0 0 0 18.4 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+        <div class="camera-alternative">
+          <span>atau</span>
+          <button type="button" id="choose-photo">Pilih foto dari perangkat</button>
+        </div>
+      </div>
+
+      <div class="workflow-screen" data-workflow-screen="results" hidden>
+        <header class="workflow-header">
+          <button class="workflow-back" type="button" aria-label="Kembali ke kamera" data-workflow-back>
+            <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m12.5 4-6 6 6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <h2>Hasil Deteksi</h2>
+        </header>
+        <div class="workflow-content">
+          <p class="workflow-summary" id="detection-summary">AI mendeteksi 4 jenis sampah dari foto kamu:</p>
+          <p class="workflow-error" id="workflow-error" role="alert" hidden></p>
+          <div class="detection-list" id="detection-list"></div>
+          <div class="workflow-actions">
+            <button class="workflow-primary" type="button" id="to-confirm">✓ Deteksi sudah benar, lanjut</button>
+            <button class="workflow-secondary" type="button" id="detection-correction">Ada yang salah / tidak terdeteksi</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="workflow-screen" data-workflow-screen="confirm" hidden>
+        <header class="workflow-header">
+          <button class="workflow-back" type="button" aria-label="Kembali ke hasil deteksi" data-workflow-back="results">
+            <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m12.5 4-6 6 6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <h2>Konfirmasi Sampah</h2>
+        </header>
+        <div class="workflow-content">
+          <div class="confirm-intro">
+            <span id="confirm-count">4 sampah siap diproses:</span>
+            <button type="button" id="toggle-all-confirm">Pilih semua</button>
+          </div>
+          <div class="confirm-list" id="confirm-list"></div>
+          <div class="workflow-actions">
+            <button class="workflow-primary" type="button" id="confirm-add" disabled>Tambahkan ke daftar sampah</button>
+            <button class="workflow-secondary" type="button" id="confirm-correction">Ada yang salah / tidak terdeteksi</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="workflow-screen" data-workflow-screen="review" hidden>
+        <header class="workflow-header">
+          <button class="workflow-back" type="button" aria-label="Kembali ke konfirmasi sampah" data-workflow-back="confirm">
+            <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m12.5 4-6 6 6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <h2>Cek Kondisi</h2>
+        </header>
+        <div class="workflow-content">
+          <div class="review-list" id="review-list"></div>
+        </div>
+      </div>
+
+      <div class="workflow-screen" data-workflow-screen="quantity" hidden>
+        <header class="workflow-header">
+          <button class="workflow-back" type="button" aria-label="Kembali ke pemeriksaan sampah" data-workflow-back="review">
+            <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m12.5 4-6 6 6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <h2>Berapa Banyak?</h2>
+        </header>
+        <div class="workflow-content">
+          <div class="quantity-progress">
+            <span class="quantity-progress-track"><span id="quantity-progress-fill"></span></span>
+            <span id="quantity-progress-label">Bahan 1 dari 1</span>
+          </div>
+          <section class="quantity-card" id="quantity-card"></section>
+        </div>
+        <div class="workflow-actions">
+          <button class="workflow-primary" type="button" id="quantity-next">Lanjut →</button>
+        </div>
+      </div>
+
+      <div class="workflow-screen" data-workflow-screen="quantity-confirm" hidden>
+        <header class="workflow-header">
+          <button class="workflow-back" type="button" aria-label="Kembali mengatur jumlah" data-workflow-back="quantity">
+            <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m12.5 4-6 6 6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <h2>Konfirmasi Jumlah</h2>
+        </header>
+        <div class="workflow-content">
+          <p class="workflow-summary">Periksa kembali jumlah semua sampah yang akan dimasukkan ke wadah.</p>
+          <div class="quantity-confirm-list" id="quantity-confirm-list"></div>
+          <div class="workflow-actions">
+            <button class="workflow-primary" type="button" id="quantity-confirm-continue">Konfirmasi jumlah</button>
+            <button class="workflow-secondary" type="button" data-workflow-back="quantity">Ubah jumlah</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="workflow-screen" data-workflow-screen="type-select" hidden>
+        <header class="workflow-header">
+          <button class="workflow-back" type="button" aria-label="Kembali ke konfirmasi jumlah" data-workflow-back="quantity-confirm">
+            <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m12.5 4-6 6 6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <h2>Pilih Jenis Olahan</h2>
+        </header>
+        <div class="workflow-content">
+          <p class="workflow-summary">Pilih cara mengolah sampah yang sudah dikonfirmasi.</p>
+          <div class="recipe-list" id="recipe-list"></div>
+          <p class="workflow-error" id="recipe-error" role="alert" hidden>Pilih jenis olahan terlebih dahulu.</p>
+        </div>
+        <div class="workflow-actions">
+          <button class="workflow-primary" type="button" id="recipe-continue">Lanjutkan</button>
+        </div>
+      </div>
+
+      <div class="workflow-screen" data-workflow-screen="create-vessel" hidden>
+        <header class="workflow-header">
+          <button class="workflow-back" type="button" aria-label="Kembali memilih jenis olahan" data-workflow-back="type-select">
+            <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m12.5 4-6 6 6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <h2>Buat Wadah Baru</h2>
+        </header>
+        <div class="workflow-content">
+          <p class="workflow-summary">Beri nama wadah dan siapkan bahan yang diperlukan untuk memulai proses.</p>
+          <label class="vessel-name-field">
+            Nama wadah
+            <input id="new-vessel-name" type="text" maxlength="32" placeholder="Contoh: Kompos Dapur">
+          </label>
+          <h3 class="materials-heading">Bahan yang diperlukan</h3>
+          <div class="materials-list" id="materials-list"></div>
+          <p class="workflow-error" id="vessel-error" role="alert" hidden></p>
+        </div>
+        <div class="workflow-actions">
+          <button class="workflow-primary" type="button" id="save-vessel">Buat dan simpan wadah</button>
+        </div>
+      </div>
+
+      <div class="workflow-screen" data-workflow-screen="vessel-detail" hidden>
+        <header class="workflow-header">
+          <button class="workflow-back" type="button" aria-label="Kembali ke daftar wadah" data-workflow-back="vessel-close">
+            <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m12.5 4-6 6 6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <h2 id="vessel-detail-heading">Detail Wadah</h2>
+        </header>
+        <div class="workflow-content vessel-detail-content" id="vessel-detail-content"></div>
+        <div class="workflow-actions" id="vessel-detail-actions"></div>
+      </div>
+
+      <div class="workflow-screen" data-workflow-screen="vessel-ready" hidden>
+        <header class="workflow-header">
+          <button class="workflow-back" type="button" aria-label="Kembali ke detail wadah" data-workflow-back="vessel-detail">
+            <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m12.5 4-6 6 6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <h2>Siap Fermentasi</h2>
+        </header>
+        <div class="vessel-ready-card" id="vessel-ready-content"></div>
+        <div class="workflow-actions">
+          <button class="workflow-primary" type="button" id="begin-fermentation">Mulai Fermentasi</button>
+        </div>
+      </div>
+
+      <div class="workflow-screen" data-workflow-screen="no-detection" hidden>
+        <div class="no-detection-dialog" role="dialog" aria-modal="true" aria-labelledby="no-detection-title">
+          <div class="no-detection-illustration" aria-hidden="true">🔎</div>
+          <h3 id="no-detection-title">Tidak Ada Sampah Terdeteksi</h3>
+          <p>Coba ambil foto yang lebih jelas dan pastikan sampah terlihat di dalam bingkai.</p>
+          <div class="workflow-actions">
+            <button class="workflow-primary" type="button" id="retry-camera">Coba Foto Lagi</button>
+            <button class="workflow-secondary" type="button" id="manual-from-empty">Isi Secara Manual</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="workflow-screen" data-workflow-screen="manual" hidden>
+        <header class="workflow-header">
+          <button class="workflow-back" type="button" aria-label="Kembali" data-workflow-back="manual-return">
+            <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m12.5 4-6 6 6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <h2>Isi Manual</h2>
+        </header>
+        <div class="workflow-content">
+          <p class="manual-note">Ketik nama sampah yang kamu maksud — kami akan coba mencocokkan dengan resep yang ada.</p>
+          <label class="manual-search-label" for="manual-search-input">Nama sampah</label>
+          <div class="manual-search-wrap">
+            <div class="manual-search">
+              <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M8.8 15.2a6.4 6.4 0 1 0 0-12.8 6.4 6.4 0 0 0 0 12.8ZM13.5 13.5 18 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              <input id="manual-search-input" type="search" role="combobox" aria-autocomplete="list" aria-controls="manual-suggestions" aria-expanded="false" placeholder="Contoh: sisa nasi" autocomplete="off">
+            </div>
+            <div class="manual-suggestions" id="manual-suggestions" role="listbox" hidden></div>
+          </div>
+          <div class="manual-picked" id="manual-picked" aria-label="Sampah yang dipilih"></div>
+        </div>
+        <div class="manual-find">
+          <button class="workflow-primary" type="button" id="manual-find-button">Cari</button>
+        </div>
+      </div>
+
+      <div class="workflow-screen manual-not-found" data-workflow-screen="not-found" hidden>
+        <header class="workflow-header">
+          <button class="workflow-back" type="button" aria-label="Kembali ke input manual" data-workflow-back="manual">
+            <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="m12.5 4-6 6 6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <h2>Isi Manual</h2>
+        </header>
+        <div class="not-found-body">
+          <span class="not-found-face" aria-hidden="true">🤔</span>
+          <h3>Sampah Tidak Ditemukan</h3>
+          <p id="not-found-message">Nama sampah belum ada di daftar resep kami. Coba gunakan nama lain atau kembali ke hasil deteksi.</p>
+        </div>
+        <div class="not-found-actions">
+          <button class="workflow-primary" type="button" id="try-another-name">Coba Nama Lain</button>
+          <button class="workflow-secondary" type="button" id="not-found-back">Kembali ke Hasil Deteksi</button>
+        </div>
+      </div>
+    </section>
+    <input id="photo-input" type="file" accept="image/*" hidden>
+
+    <nav class="bottom-nav" aria-label="Navigasi utama">
+      <button class="nav-item active" type="button" data-tab="Beranda" aria-pressed="true">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1V10Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+        </svg>
+        <span>Beranda</span>
+      </button>
+      <button class="nav-item camera" type="button" data-tab="Foto" aria-pressed="false">
+        <span class="camera-button" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M4 8.5h3l1.4-2h7.2l1.4 2h3a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-8a1 1 0 0 1 1-1Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+            <circle cx="12" cy="13" r="3.2" stroke="currentColor" stroke-width="1.5"/>
+          </svg>
+        </span>
+        <span class="camera-label">Foto</span>
+      </button>
+      <button class="nav-item" type="button" data-tab="Wadah" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="m12 2.8 8 4.5v9.4l-8 4.5-8-4.5V7.3l8-4.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+          <path d="m4.3 7.5 7.7 4.4 7.7-4.4M12 12v9" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+          <path d="m8 5.1 8 4.5v4.6l-8-4.5V5.1Z" fill="currentColor" opacity=".22"/>
+        </svg>
+        <span>Wadah</span>
+      </button>
+    </nav>
+    <div class="home-indicator" aria-hidden="true"></div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </div>
+
+  <script>
+    const sortToggle = document.querySelector("#sort-toggle");
+    const sortMenu = document.querySelector("#sort-menu");
+    const toast = document.querySelector("#toast");
+    const notificationButton = document.querySelector(".notification");
+    const notificationLayer = document.querySelector("#notification-layer");
+    const notificationCloseButton = document.querySelector(".notification-close");
+    const homeView = document.querySelector("main");
+    const wadahView = document.querySelector("#wadah-view");
+    const brandName = document.querySelector("#brand-name");
+    const brandCount = document.querySelector("#brand-count");
+    const wadahCards = document.querySelector("#wadah-cards");
+    const wadahEmpty = document.querySelector("#wadah-empty");
+    const phone = document.querySelector(".phone");
+    const workflowView = document.querySelector("#workflow-view");
+    const cameraVideo = document.querySelector("#camera-video");
+    const cameraImagePreview = document.querySelector("#camera-image-preview");
+    const cameraPlaceholder = document.querySelector("#camera-placeholder");
+    const cameraError = document.querySelector("#camera-error");
+    const cameraCapture = document.querySelector("#camera-capture");
+    const cameraFlash = document.querySelector("#camera-flash");
+    const cameraSwitch = document.querySelector("#camera-switch");
+    const photoInput = document.querySelector("#photo-input");
+    const detectionList = document.querySelector("#detection-list");
+    const detectionSummary = document.querySelector("#detection-summary");
+    const confirmList = document.querySelector("#confirm-list");
+    const confirmCount = document.querySelector("#confirm-count");
+    const confirmAdd = document.querySelector("#confirm-add");
+    const reviewList = document.querySelector("#review-list");
+    const quantityCard = document.querySelector("#quantity-card");
+    const quantityConfirmList = document.querySelector("#quantity-confirm-list");
+    const recipeList = document.querySelector("#recipe-list");
+    const materialsList = document.querySelector("#materials-list");
+    const newVesselName = document.querySelector("#new-vessel-name");
+    const recipeError = document.querySelector("#recipe-error");
+    const vesselError = document.querySelector("#vessel-error");
+    const vesselDetailContent = document.querySelector("#vessel-detail-content");
+    const vesselDetailActions = document.querySelector("#vessel-detail-actions");
+    const vesselReadyContent = document.querySelector("#vessel-ready-content");
+    const beginFermentationButton = document.querySelector("#begin-fermentation");
+    const manualInput = document.querySelector("#manual-search-input");
+    const manualSuggestions = document.querySelector("#manual-suggestions");
+    const manualPicked = document.querySelector("#manual-picked");
+    const manualFindButton = document.querySelector("#manual-find-button");
+    const workflowError = document.querySelector("#workflow-error");
+    const demoDetections = [
+      { name: "Kulit Pisang", confidence: 94, emoji: "🍌", category: "Kompos" },
+      { name: "Bawang merah/putih/bombay", confidence: 89, emoji: "🧅", category: "Kompos" },
+      { name: "Cangkang Telur", confidence: 44, emoji: "🥚", category: "Kompos" },
+      { name: "Daun Kering", confidence: 32, emoji: "🍂", category: "Kompos" }
+    ];
+    const compostSuggestions = [
+      { name: "Sisa Nasi", category: "Kompos", emoji: "🍚" },
+      { name: "Sisa Roti", category: "Kompos", emoji: "🍞" },
+      { name: "Sisa Pasta", category: "Kompos", emoji: "🍝" },
+      { name: "Sisa Sayuran", category: "Kompos", emoji: "🥬" },
+      { name: "Beras", category: "Kompos", emoji: "🌾" },
+      { name: "Kulit Pisang", category: "Kompos", emoji: "🍌" },
+      { name: "Bawang Merah", category: "Kompos", emoji: "🧅" },
+      { name: "Bawang Putih", category: "Kompos", emoji: "🧄" },
+      { name: "Cangkang Telur", category: "Kompos", emoji: "🥚" },
+      { name: "Daun Kering", category: "Kompos", emoji: "🍂" },
+      { name: "Ampas Kopi", category: "Kompos", emoji: "☕" },
+      { name: "Kulit Jeruk", category: "Eco Enzim", emoji: "🍊" },
+      { name: "Kulit Nanas", category: "Eco Enzim", emoji: "🍍" },
+      { name: "Kulit Apel", category: "Eco Enzim", emoji: "🍎" }
+    ];
+    let cameraStream = null;
+    let cameraFacingMode = "environment";
+    let flashEnabled = false;
+    let cameraRequestId = 0;
+    let detectionRequestId = 0;
+    let workflowReturnScreen = "Beranda";
+    let manualReturnScreen = "results";
+    let capturedPhotoUrl = null;
+    let detectedItems = [];
+    let confirmedItems = [];
+    let quantityItems = [];
+    let quantityIndex = 0;
+    let reviewIndex = 0;
+    let reviewTotal = 0;
+    let reviewShowingRejection = false;
+    let recipeChoice = "";
+    let manualIsBulk = false;
+    let selectedManualItems = [];
+    let toastTimeout;
+    let wadahStatusFilter = "active";
+    let wadahTypeFilter = "all";
+    const storageKey = "snapcompost.savedVessels";
+    let savedVessels = [];
+    const vesselRecords = new Map();
+    let selectedVessel = null;
+
+    try {
+      const storedVessels = JSON.parse(localStorage.getItem(storageKey) || "[]");
+      if (Array.isArray(storedVessels)) {
+        savedVessels = storedVessels.filter((vessel) => vessel
+          && typeof vessel.name === "string"
+          && ["Kompos", "Eco Enzim"].includes(vessel.type)
+          && Array.isArray(vessel.items)).map((vessel, index) => ({
+            ...vessel,
+            id: vessel.id || `saved-vessel-${index}`,
+            status: ["filling", "fermenting", "mature", "harvested"].includes(vessel.status)
+              ? vessel.status
+              : "filling",
+            durationDays: vessel.durationDays || (vessel.type === "Kompos" ? 30 : 90),
+            materials: Array.isArray(vessel.materials) ? vessel.materials : null,
+            tools: Array.isArray(vessel.tools) ? vessel.tools : null
+          }));
+      }
+    } catch (error) {
+      console.error("Wadah tersimpan tidak dapat dibaca dari penyimpanan browser.", error);
+    }
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add("visible");
+      window.clearTimeout(toastTimeout);
+      toastTimeout = window.setTimeout(() => toast.classList.remove("visible"), 2200);
+    }
+
+    function makeVesselPreparation(vessel) {
+      const wasteNames = vessel.items.length
+        ? vessel.items.map((item) => item.name).join(", ")
+        : "Sampah organik terpilih";
+      const wasteGrams = Math.round(vessel.items.reduce((total, item) => {
+        const quantity = Number(item.quantity) || 0;
+        return total + (item.unit === "gram" ? quantity : quantity * 120);
+      }, 0));
+      const wasteAmount = wasteGrams ? `${wasteGrams} g` : "sesuai jumlah bahan";
+      if (vessel.type === "Eco Enzim") {
+        return {
+          materials: [
+            { name: `Kulit buah (${wasteNames})`, amount: wasteAmount },
+            { name: "Gula merah atau molase", amount: wasteGrams ? `${Math.max(1, Math.round(wasteGrams / 3))} g` : "1 bagian" },
+            { name: "Air bersih", amount: wasteGrams ? `${Math.max(10, Math.round(wasteGrams * 10 / 3))} ml` : "10 bagian" }
+          ],
+          tools: ["Wadah plastik bertutup", "Timbangan atau gelas ukur", "Pengaduk bersih"],
+          steps: [
+            "Cuci bersih dan potong kecil kulit buah yang sudah disiapkan.",
+            "Larutkan gula merah ke dalam air, lalu masukkan ke wadah.",
+            "Tambahkan kulit buah. Sisakan ruang kosong di bagian atas wadah.",
+            "Tutup wadah dengan rapat, beri label tanggal mulai, dan simpan di tempat teduh.",
+            "Buka tutup sebentar secara berkala pada masa awal untuk membuang gas fermentasi."
+          ]
+        };
+      }
+      return {
+        materials: [
+          { name: `Sampah organik (${wasteNames})`, amount: wasteAmount },
+          { name: "Daun kering atau bahan cokelat", amount: "secukupnya" },
+          { name: "Tanah atau kompos matang", amount: "secukupnya" },
+          { name: "Air bersih", amount: "secukupnya" }
+        ],
+        tools: ["Wadah kompos berlubang", "Sekop kecil atau pengaduk", "Sarung tangan"],
+        steps: [
+          "Potong sampah organik menjadi bagian kecil agar lebih cepat terurai.",
+          "Susun bahan cokelat dan sampah organik secara berlapis di dalam wadah.",
+          "Tambahkan sedikit tanah atau kompos matang sebagai starter.",
+          "Jaga bahan tetap lembap seperti spons yang diperas, bukan sampai becek.",
+          "Aduk berkala agar udara masuk dan proses pengomposan merata."
+        ]
+      };
+    }
+
+    function ensureVesselPreparation(vessel) {
+      if (!vessel.materials || !vessel.tools) {
+        const preparation = makeVesselPreparation(vessel);
+        vessel.materials = preparation.materials.map((item) => ({ ...item, checked: false }));
+        vessel.tools = preparation.tools.map((name) => ({ name, checked: false }));
+      }
+    }
+
+    function persistVessels() {
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(savedVessels));
+        return true;
+      } catch (error) {
+        console.error("Perubahan wadah tidak dapat disimpan ke penyimpanan browser.", error);
+        showToast("Perubahan wadah gagal disimpan. Periksa ruang penyimpanan browser.");
+        return false;
+      }
+    }
+
+    function vesselDuration(vessel) {
+      return vessel.durationDays || (vessel.type === "Kompos" ? 30 : 90);
+    }
+
+    function getVesselStatus(vessel) {
+      if (vessel.status === "fermenting" && vessel.fermentationStarted) {
+        const elapsed = (Date.now() - vessel.fermentationStarted) / 86400000;
+        if (elapsed >= vesselDuration(vessel)) vessel.status = "mature";
+      }
+      return vessel.status || "filling";
+    }
+
+    function getVesselProgress(vessel) {
+      if (getVesselStatus(vessel) === "mature" || vessel.status === "harvested") return 100;
+      if (vessel.status !== "fermenting" || !vessel.fermentationStarted) return 0;
+      return Math.min(99, Math.floor(
+        ((Date.now() - vessel.fermentationStarted) / 86400000 / vesselDuration(vessel)) * 100
+      ));
+    }
+
+    function updateVesselCard(vessel) {
+      const status = getVesselStatus(vessel);
+      const progress = getVesselProgress(vessel);
+      document.querySelectorAll(`[data-vessel-id="${CSS.escape(vessel.id)}"]`).forEach((card) => {
+        const isHomeCard = card.classList.contains("vessel-card");
+        const nameLine = card.querySelector(".vessel-name-line");
+        nameLine.querySelectorAll(".type-pill").forEach((badge) => badge.remove());
+        let statusBadge = nameLine.querySelector(".vessel-status-pill");
+        if (!statusBadge) {
+          statusBadge = document.createElement("span");
+          statusBadge.className = "vessel-status-pill";
+          nameLine.append(statusBadge);
+        }
+        statusBadge.textContent = status === "filling"
+          ? "MENGISI"
+          : status === "fermenting"
+            ? "FERMENTASI"
+            : status === "harvested"
+              ? "DIPANEN"
+              : "MATANG";
+
+        let track = card.querySelector(".progress-track");
+        if (!track && status !== "filling") {
+          track = document.createElement("div");
+          track.className = "progress-track";
+          card.insertBefore(track, card.querySelector(".vessel-foot, .wadah-card-foot"));
+          const fill = document.createElement("div");
+          fill.className = "progress-fill";
+          track.append(fill);
+        }
+        if (track) {
+          track.setAttribute("aria-label", `Progres ${progress}%`);
+          const fill = track.querySelector(".progress-fill");
+          fill.classList.toggle("green", vessel.type === "Kompos");
+          fill.style.width = `${progress}%`;
+        }
+
+        let foot = card.querySelector(isHomeCard ? ".vessel-foot" : ".wadah-card-foot");
+        if (!foot) {
+          foot = document.createElement("div");
+          foot.className = isHomeCard ? "vessel-foot" : "wadah-card-foot";
+          card.append(foot);
+        }
+        const days = vesselDuration(vessel);
+        const elapsed = status === "fermenting" || status === "mature" || status === "harvested"
+          ? Math.min(days, Math.floor((Date.now() - (vessel.fermentationStarted || Date.now())) / 86400000))
+          : 0;
+        foot.replaceChildren();
+        const dayLabel = document.createElement("span");
+        dayLabel.textContent = status === "filling"
+          ? "Lengkapi bahan pendukung"
+          : `Hari ke-${elapsed} dari ${days}`;
+        const statusLabel = document.createElement("span");
+        if (status === "mature") {
+          statusLabel.className = "ready";
+          statusLabel.textContent = "Siap dipanen!";
+        } else if (status === "harvested") {
+          statusLabel.className = "ready";
+          statusLabel.textContent = "Sudah dipanen";
+        } else if (status === "filling") {
+          statusLabel.className = "waiting-label";
+          statusLabel.textContent = "Mengisi";
+        } else {
+          statusLabel.textContent = `+${Math.max(0, days - elapsed)} hari lagi`;
+        }
+        foot.append(dayLabel, statusLabel);
+        card.dataset.progress = String(progress);
+        if (!isHomeCard) {
+          card.classList.toggle("ready", status === "mature");
+          card.dataset.status = status === "harvested" ? "harvested" : "active";
+          const percent = card.querySelector(".wadah-percent");
+          if (percent) percent.textContent = `${progress}%`;
+        }
+      });
+    }
+
+    function makeCheckRow(name, detail, group, index, checked, disabled) {
+      const label = document.createElement("label");
+      label.className = "vessel-check-row";
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.checked = Boolean(checked);
+      checkbox.disabled = disabled;
+      checkbox.dataset.checkGroup = group;
+      checkbox.dataset.checkIndex = String(index);
+      const text = document.createElement("span");
+      text.textContent = detail ? `${name} · ${detail}` : name;
+      label.append(checkbox, text);
+      return label;
+    }
+
+    function appendVesselMaterialSection(heading, items, { kicker = "SAMPAH ORGANIK YANG DIGUNAKAN" } = {}) {
+      const section = document.createElement("section");
+      section.className = "vessel-section";
+      const label = document.createElement("p");
+      label.className = "vessel-section-kicker";
+      label.textContent = kicker;
+      const sectionHeading = document.createElement("h3");
+      sectionHeading.textContent = heading;
+      const rows = document.createElement("div");
+      rows.className = "vessel-material-rows";
+      items.forEach((item) => {
+        const row = document.createElement("div");
+        row.className = "vessel-material-summary";
+        const name = document.createElement("span");
+        name.textContent = item.name;
+        const amount = document.createElement("strong");
+        amount.textContent = item.amount;
+        row.append(name, amount);
+        rows.append(row);
+      });
+      section.append(label, sectionHeading, rows);
+      return section;
+    }
+
+    function getVesselWasteRows(vessel) {
+      const items = vessel.items.length ? vessel.items : [
+        { name: "Kulit Pisang", quantity: 60, unit: "gram" },
+        { name: "Sisa Nasi", quantity: 100, unit: "gram" }
+      ];
+      return items.map((item) => ({
+            name: item.name,
+            amount: item.unit === "gram"
+              ? `${Number(item.quantity) || 0}g`
+              : `${Math.round((Number(item.quantity) || 0) * 120)}g`
+          }));
+    }
+
+    function getVesselOtherMaterials(vessel) {
+      const recipe = makeVesselPreparation(vessel);
+      return recipe.materials.slice(1);
+    }
+
+    function createVesselRecipeSection(vessel) {
+      const section = document.createElement("section");
+      section.className = "vessel-section";
+      const kicker = document.createElement("p");
+      kicker.className = "vessel-section-kicker";
+      kicker.textContent = "RESEP YANG DIGUNAKAN";
+      const row = document.createElement("div");
+      row.className = "vessel-recipe-row";
+      const icon = document.createElement("span");
+      icon.className = "vessel-recipe-icon";
+      icon.textContent = vessel.type === "Kompos" ? "🌿" : "🍊";
+      const text = document.createElement("span");
+      const title = document.createElement("strong");
+      title.textContent = vessel.recipeName || (vessel.type === "Kompos" ? "Kompos Organik" : "Eco Enzim Buah Segar");
+      const duration = document.createElement("small");
+      duration.textContent = `Durasi: ${vesselDuration(vessel)} hari`;
+      text.append(title, duration);
+      row.append(icon, text);
+      section.append(kicker, row);
+      return section;
+    }
+
+    function renderVesselSteps(steps) {
+      const section = document.createElement("section");
+      section.className = "vessel-section";
+      const heading = document.createElement("h3");
+      heading.textContent = "Tata cara";
+      const list = document.createElement("ol");
+      list.className = "vessel-steps";
+      steps.forEach((instruction, index) => {
+        const step = document.createElement("li");
+        step.className = "vessel-step";
+        const number = document.createElement("span");
+        number.className = "vessel-step-number";
+        number.textContent = String(index + 1);
+        const text = document.createElement("span");
+        text.textContent = instruction;
+        step.append(number, text);
+        list.append(step);
+      });
+      section.append(heading, list);
+      return section;
+    }
+
+    function renderVesselPhaseCard(vessel, status, progress) {
+      const days = vesselDuration(vessel);
+      const elapsed = Math.min(days, Math.floor((Date.now() - (vessel.fermentationStarted || Date.now())) / 86400000));
+      const remaining = Math.max(0, days - elapsed);
+      const estimatedDate = new Date((vessel.fermentationStarted || Date.now()) + days * 86400000);
+      const card = document.createElement("section");
+      card.className = status === "mature" || status === "harvested"
+        ? "vessel-mature-card"
+        : "vessel-fermentation-card";
+      const pill = document.createElement("span");
+      pill.className = `vessel-phase-pill${status === "mature" || status === "harvested" ? " mature" : ""}`;
+      pill.textContent = status === "mature" || status === "harvested" ? "Matang" : "Proses";
+      const drop = document.createElement("span");
+      drop.className = "vessel-phase-drop";
+      drop.textContent = vessel.type === "Kompos" ? "🌱" : "💧";
+      if (status === "mature" || status === "harvested") {
+        const title = document.createElement("h3");
+        title.textContent = status === "harvested" ? "Sudah Dipanen!" : "Sudah Matang!";
+        const message = document.createElement("p");
+        message.textContent = status === "harvested" ? "Wadah ini sudah dipanen." : "Siap dipanen hari ini!";
+        card.append(pill, drop, title, message);
+        return card;
+      }
+      const count = document.createElement("strong");
+      count.className = "vessel-phase-number";
+      count.textContent = String(elapsed);
+      const caption = document.createElement("p");
+      caption.className = "vessel-phase-caption";
+      caption.textContent = `${elapsed} dari ${days} hari total`;
+      const progressTrack = document.createElement("div");
+      progressTrack.className = "vessel-phase-progress";
+      const progressFill = document.createElement("span");
+      progressFill.style.width = `${progress}%`;
+      progressTrack.append(progressFill);
+      const estimate = document.createElement("p");
+      estimate.className = "vessel-estimate";
+      estimate.textContent = `◷ Estimasi matang: ${estimatedDate.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })} · ${remaining} hari lagi`;
+      card.append(pill, drop, count, caption, progressTrack, estimate);
+      return card;
+    }
+
+    function renderVesselDetail(vessel) {
+      selectedVessel = vessel;
+      ensureVesselPreparation(vessel);
+      updateVesselCard(vessel);
+      const status = getVesselStatus(vessel);
+      const duration = vesselDuration(vessel);
+      const progress = getVesselProgress(vessel);
+      document.querySelector("#vessel-detail-heading").textContent = vessel.name;
+      document.querySelector('[data-workflow-screen="vessel-detail"]').dataset.vesselStatus = status;
+      vesselDetailContent.replaceChildren();
+      vesselDetailActions.replaceChildren();
+
+      const instructions = makeVesselPreparation(vessel);
+      const addAction = (text, { id, className = "workflow-primary", disabled = false } = {}) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = className;
+        if (id) button.id = id;
+        button.textContent = text;
+        button.disabled = disabled;
+        vesselDetailActions.append(button);
+      };
+
+      if (status !== "filling") {
+        vesselDetailContent.append(renderVesselPhaseCard(vessel, status, progress));
+        vesselDetailContent.append(createVesselRecipeSection(vessel));
+        vesselDetailContent.append(appendVesselMaterialSection(
+          "Sampah organik yang digunakan",
+          getVesselWasteRows(vessel)
+        ));
+        vesselDetailContent.append(appendVesselMaterialSection(
+          "Bahan lain yang digunakan",
+          getVesselOtherMaterials(vessel),
+          { kicker: "BAHAN LAIN YANG DIGUNAKAN" }
+        ));
+        if (status === "fermenting") {
+          addAction("Foto Sampah untuk Wadah Lain", { id: "vessel-add-waste-photo", className: "workflow-secondary" });
+          setWorkflowScreen("vessel-detail");
+          return;
+        }
+        if (status === "mature") {
+          addAction("Tandai Sudah Dipanen", {
+            id: "vessel-mark-harvested",
+            className: "workflow-primary vessel-harvest-button"
+          });
+          setWorkflowScreen("vessel-detail");
+          return;
+        }
+        addAction("Wadah Sudah Dipanen", { disabled: true, className: "workflow-secondary" });
+        setWorkflowScreen("vessel-detail");
+        return;
+      }
+
+      const hero = document.createElement("section");
+      hero.className = "vessel-detail-hero";
+      const icon = document.createElement("span");
+      icon.className = "vessel-detail-emoji";
+      icon.textContent = vessel.type === "Kompos" ? "🌿" : "🍊";
+      icon.setAttribute("aria-hidden", "true");
+      const title = document.createElement("h3");
+      title.textContent = vessel.name;
+      const subtitle = document.createElement("p");
+      subtitle.className = "vessel-detail-subtitle";
+      subtitle.textContent = `${vessel.type} · Mengisi`;
+      hero.append(icon, title, subtitle);
+      vesselDetailContent.append(hero);
+
+      const renderCheckSection = (heading, note, entries, group, useAmount) => {
+        const section = document.createElement("section");
+        section.className = "vessel-section";
+        const sectionHeading = document.createElement("h3");
+        sectionHeading.textContent = heading;
+        const sectionNote = document.createElement("p");
+        sectionNote.className = "vessel-section-note";
+        sectionNote.textContent = note;
+        const list = document.createElement("div");
+        list.className = "vessel-check-list";
+        entries.forEach((entry, index) => {
+          list.append(makeCheckRow(
+            entry.name,
+            useAmount ? entry.amount : "",
+            group,
+            index,
+            entry.checked,
+            status !== "filling"
+          ));
+        });
+        section.append(sectionHeading, sectionNote, list);
+        return section;
+      };
+
+      vesselDetailContent.append(
+        renderCheckSection(
+          "Bahan yang harus disiapkan",
+          "Centang bahan setelah tersedia. Wadah akan terkunci saat fermentasi dimulai.",
+          vessel.materials,
+          "materials",
+          true
+        ),
+        renderCheckSection(
+          "Alat yang digunakan",
+          "Pastikan alat bersih dan siap digunakan.",
+          vessel.tools,
+          "tools",
+          false
+        )
+      );
+      vesselDetailContent.append(renderVesselSteps(instructions.steps));
+      addAction("Mulai Fermentasi", {
+        id: "vessel-detail-continue",
+        disabled: ![...vessel.materials, ...vessel.tools].every((entry) => entry.checked)
+      });
+      setWorkflowScreen("vessel-detail");
+    }
+
+    function renderVesselReady(vessel) {
+      selectedVessel = vessel;
+      vesselReadyContent.replaceChildren();
+      const icon = document.createElement("span");
+      icon.className = "vessel-ready-icon";
+      icon.textContent = "✓";
+      icon.setAttribute("aria-hidden", "true");
+      const title = document.createElement("h3");
+      title.textContent = "Semua bahan sudah siap!";
+      const message = document.createElement("p");
+      message.textContent = `${vessel.name} siap dikunci untuk proses ${vessel.type.toLocaleLowerCase("id")}. Waktu fermentasi mulai dihitung setelah kamu mengonfirmasi.`;
+      vesselReadyContent.append(icon, title, message);
+      setWorkflowScreen("vessel-ready");
+    }
+
+    function openVessel(vessel) {
+      workflowReturnScreen = phone.dataset.screen === "wadah" ? "Wadah" : "Beranda";
+      notificationLayer.hidden = true;
+      notificationButton.setAttribute("aria-expanded", "false");
+      renderVesselDetail(vessel);
+    }
+
+    function startVesselFermentation() {
+      if (!selectedVessel || getVesselStatus(selectedVessel) !== "filling") return;
+      if (![...selectedVessel.materials, ...selectedVessel.tools].every((item) => item.checked)) {
+        showToast("Lengkapi semua checklist bahan dan alat terlebih dahulu.");
+        return;
+      }
+      selectedVessel.status = "fermenting";
+      selectedVessel.fermentationStarted = Date.now();
+      if (savedVessels.some((vessel) => vessel.id === selectedVessel.id) && !persistVessels()) {
+        selectedVessel.status = "filling";
+        delete selectedVessel.fermentationStarted;
+        renderVesselDetail(selectedVessel);
+        return;
+      }
+      updateVesselCard(selectedVessel);
+      renderVesselDetail(selectedVessel);
+      showToast(`Fermentasi ${selectedVessel.name} dimulai`);
+    }
+
+    function closeNotifications({ restoreFocus = true } = {}) {
+      notificationLayer.hidden = true;
+      notificationButton.setAttribute("aria-expanded", "false");
+      if (restoreFocus) notificationButton.focus();
+    }
+
+    notificationButton.addEventListener("click", () => {
+      notificationLayer.hidden = false;
+      notificationButton.setAttribute("aria-expanded", "true");
+      notificationCloseButton.focus();
+    });
+
+    notificationLayer.addEventListener("click", (event) => {
+      if (event.target.closest("[data-close-notifications]")) {
+        closeNotifications();
+        return;
+      }
+
+      const viewButton = event.target.closest("[data-notification-name]");
+      if (!viewButton) return;
+      const name = viewButton.dataset.notificationName;
+      closeNotifications();
+      showToast(`${name} siap dipanen!`);
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && !notificationLayer.hidden) {
+        closeNotifications();
+      }
+    });
+
+    sortToggle.addEventListener("click", () => {
+      const isOpen = sortToggle.getAttribute("aria-expanded") === "true";
+      sortToggle.setAttribute("aria-expanded", String(!isOpen));
+      sortMenu.classList.toggle("open", !isOpen);
+    });
+
+    sortMenu.addEventListener("click", (event) => {
+      const option = event.target.closest('[role="option"]');
+      if (!option) return;
+      sortMenu.querySelectorAll('[role="option"]').forEach((item) => {
+        item.setAttribute("aria-selected", String(item === option));
+      });
+      sortToggle.querySelector("span").textContent = option.textContent;
+      sortToggle.setAttribute("aria-expanded", "false");
+      sortMenu.classList.remove("open");
+    });
+
+    function updateWadahCards() {
+      const cards = [...wadahCards.querySelectorAll(".wadah-card")];
+
+      cards.forEach((card) => {
+        card.hidden = card.dataset.status !== wadahStatusFilter
+          || (wadahTypeFilter !== "all" && card.dataset.type !== wadahTypeFilter);
+      });
+
+      const sort = document.querySelector(".wadah-sort[aria-pressed=\"true\"]")?.dataset.sort;
+      if (sort) {
+        cards.sort((a, b) => {
+          if (sort === "progress") {
+            return Number(b.dataset.progress) - Number(a.dataset.progress)
+              || Number(b.dataset.created) - Number(a.dataset.created);
+          }
+          if (sort === "newest") return Number(b.dataset.created) - Number(a.dataset.created);
+          return Number(a.dataset.created) - Number(b.dataset.created);
+        });
+        cards.forEach((card) => wadahCards.append(card));
+      }
+
+      wadahEmpty.hidden = cards.some((card) => !card.hidden);
+    }
+
+    function showScreen(screen) {
+      const isWadah = screen === "Wadah";
+      phone.dataset.screen = isWadah ? "wadah" : "home";
+      homeView.hidden = isWadah;
+      wadahView.hidden = !isWadah;
+      notificationButton.hidden = isWadah;
+      brandName.textContent = isWadah ? "Semua Wadah" : "Wadahku";
+      brandCount.hidden = !isWadah;
+
+      if (isWadah) updateWadahCards();
+    }
+
+    function refreshWadahTotals() {
+      const activeCount = document.querySelectorAll(".wadah-card[data-status=\"active\"]").length;
+      const harvestedCount = document.querySelectorAll(".wadah-card[data-status=\"harvested\"]").length;
+      const totalCount = activeCount + harvestedCount;
+      const homeCards = document.querySelectorAll("main .vessel-card").length;
+      const matureCount = document.querySelectorAll("main .vessel-card .ready").length;
+      document.querySelector(".stat.total b").textContent = String(homeCards);
+      document.querySelector(".stat:nth-child(2) b").textContent = String(Math.max(0, homeCards - matureCount));
+      document.querySelector(".stat:nth-child(3) b").textContent = String(matureCount);
+      brandCount.textContent = `${totalCount} wadah`;
+    }
+
+    function createSavedVesselCards(vessel) {
+      const emoji = vessel.type === "Kompos" ? "🌿" : "🍊";
+      ensureVesselPreparation(vessel);
+      vesselRecords.set(vessel.id, vessel);
+      const progress = getVesselProgress(vessel);
+      const days = vesselDuration(vessel);
+
+      const homeCard = document.createElement("article");
+      homeCard.className = "vessel-card";
+      homeCard.dataset.vesselId = vessel.id;
+      homeCard.setAttribute("role", "button");
+      homeCard.tabIndex = 0;
+      const top = document.createElement("div");
+      top.className = "vessel-top";
+      const icon = document.createElement("span");
+      icon.className = "vessel-icon";
+      icon.textContent = emoji;
+      icon.setAttribute("aria-hidden", "true");
+      const info = document.createElement("div");
+      info.className = "vessel-info";
+      const nameLine = document.createElement("div");
+      nameLine.className = "vessel-name-line";
+      const name = document.createElement("span");
+      name.className = "vessel-name";
+      name.textContent = vessel.name;
+      const type = document.createElement("span");
+      type.className = "type-pill";
+      type.textContent = vessel.type;
+      nameLine.append(name);
+      info.append(nameLine, type);
+      top.append(icon, info);
+      const progressTrack = document.createElement("div");
+      progressTrack.className = "progress-track";
+      progressTrack.setAttribute("aria-label", `Progres ${progress}%`);
+      const progressFill = document.createElement("div");
+      progressFill.className = `progress-fill${vessel.type === "Kompos" ? " green" : ""}`;
+      progressFill.style.width = `${progress}%`;
+      progressTrack.append(progressFill);
+      const foot = document.createElement("div");
+      foot.className = "vessel-foot";
+      const dayText = document.createElement("span");
+      dayText.textContent = `Hari ke-0 dari ${days}`;
+      const duration = document.createElement("span");
+      duration.textContent = `${days} hari lagi`;
+      foot.append(dayText, duration);
+      homeCard.append(top, progressTrack, foot);
+      document.querySelector("main .vessels").prepend(homeCard);
+
+      const wadahCard = document.createElement("article");
+      wadahCard.className = "wadah-card";
+      wadahCard.dataset.vesselId = vessel.id;
+      wadahCard.setAttribute("role", "button");
+      wadahCard.tabIndex = 0;
+      wadahCard.dataset.status = "active";
+      wadahCard.dataset.type = vessel.type;
+      wadahCard.dataset.progress = String(progress);
+      wadahCard.dataset.created = String(vessel.created || Date.now());
+      const wadahTop = document.createElement("div");
+      wadahTop.className = "wadah-card-top";
+      const wadahIcon = document.createElement("span");
+      wadahIcon.className = "vessel-icon";
+      wadahIcon.textContent = emoji;
+      wadahIcon.setAttribute("aria-hidden", "true");
+      const wadahInfo = document.createElement("div");
+      wadahInfo.className = "vessel-info";
+      const wadahNameLine = document.createElement("div");
+      wadahNameLine.className = "vessel-name-line";
+      const wadahName = document.createElement("span");
+      wadahName.className = "vessel-name";
+      wadahName.textContent = vessel.name;
+      wadahNameLine.append(wadahName);
+      const wadahType = document.createElement("span");
+      wadahType.className = "type-pill";
+      wadahType.textContent = vessel.type;
+      wadahInfo.append(wadahNameLine, wadahType);
+      const percent = document.createElement("span");
+      percent.className = "wadah-percent";
+      percent.textContent = `${progress}%`;
+      wadahTop.append(wadahIcon, wadahInfo, percent);
+      const wadahProgress = document.createElement("div");
+      wadahProgress.className = "progress-track";
+      wadahProgress.setAttribute("aria-label", `Progres ${progress}%`);
+      const wadahProgressFill = document.createElement("div");
+      wadahProgressFill.className = `progress-fill${vessel.type === "Kompos" ? " green" : ""}`;
+      wadahProgressFill.style.width = `${progress}%`;
+      wadahProgress.append(wadahProgressFill);
+      const wadahFoot = document.createElement("div");
+      wadahFoot.className = "wadah-card-foot";
+      const wadahDay = document.createElement("span");
+      wadahDay.textContent = `Hari ke-0 dari ${days}`;
+      const wadahDuration = document.createElement("span");
+      wadahDuration.textContent = `${days} hari lagi`;
+      wadahFoot.append(wadahDay, wadahDuration);
+      wadahCard.append(wadahTop, wadahProgress, wadahFoot);
+      wadahCards.prepend(wadahCard);
+      updateVesselCard(vessel);
+    }
+
+    function registerExistingVesselCards(selector, prefix) {
+      document.querySelectorAll(selector).forEach((card, index) => {
+        const name = card.querySelector(".vessel-name")?.textContent.trim() || `Wadah ${index + 1}`;
+        const type = card.dataset.type || card.querySelector(".type-pill:not(.orange)")?.textContent.trim()
+          || (name.toLocaleLowerCase("id").includes("eco") ? "Eco Enzim" : "Kompos");
+        const durationMatch = card.textContent.match(/dari\s+(\d+)/i);
+        const durationDays = durationMatch ? Number(durationMatch[1]) : (type === "Kompos" ? 30 : 90);
+        const progress = Number(card.dataset.progress || card.querySelector(".wadah-percent")?.textContent || 0);
+        const harvested = card.dataset.status === "harvested" || /sudah dipanen/i.test(card.textContent);
+        const filling = /menunggu bahan|lengkapi bahan/i.test(card.textContent);
+        const mature = card.classList.contains("ready") || /siap dipanen/i.test(card.textContent);
+        const status = harvested ? "harvested" : filling ? "filling" : mature ? "mature" : "fermenting";
+        const dayMatch = card.textContent.match(/Hari ke-(\d+)/i);
+        const elapsedDays = dayMatch ? Number(dayMatch[1]) : Math.round(durationDays * progress / 100);
+        const vessel = {
+          id: `${prefix}-${index}`,
+          name,
+          type,
+          items: [],
+          created: Date.now() - (index * 86400000),
+          durationDays,
+          status,
+          fermentationStarted: status === "fermenting" || status === "mature" || status === "harvested"
+            ? Date.now() - Math.min(durationDays, elapsedDays) * 86400000
+            : undefined
+        };
+        ensureVesselPreparation(vessel);
+        vesselRecords.set(vessel.id, vessel);
+        card.dataset.vesselId = vessel.id;
+        card.dataset.type = type;
+        card.setAttribute("role", "button");
+        card.tabIndex = 0;
+        updateVesselCard(vessel);
+      });
+    }
+
+    registerExistingVesselCards("main .vessel-card", "home-demo");
+    registerExistingVesselCards("#wadah-cards .wadah-card", "wadah-demo");
+    savedVessels.forEach(createSavedVesselCards);
+    refreshWadahTotals();
+
+    function setWorkflowScreen(screen) {
+      workflowView.hidden = false;
+      phone.dataset.workflow = screen;
+      workflowView.querySelectorAll("[data-workflow-screen]").forEach((panel) => {
+        panel.hidden = panel.dataset.workflowScreen !== screen;
+      });
+    }
+
+    function showWorkflowError(message) {
+      workflowError.textContent = message;
+      workflowError.hidden = false;
+    }
+
+    function clearWorkflowError() {
+      workflowError.textContent = "";
+      workflowError.hidden = true;
+    }
+
+    function stopCamera() {
+      cameraRequestId += 1;
+      if (cameraStream) {
+        cameraStream.getTracks().forEach((track) => track.stop());
+        cameraStream = null;
+      }
+      cameraVideo.srcObject = null;
+      cameraCapture.disabled = true;
+      cameraSwitch.disabled = true;
+      cameraFlash.disabled = true;
+      flashEnabled = false;
+      cameraFlash.setAttribute("aria-label", "Nyalakan lampu flash");
+    }
+
+    function showCameraError(message) {
+      cameraPlaceholder.querySelector("strong").textContent = "Kamera belum aktif";
+      cameraError.textContent = message;
+      cameraError.hidden = false;
+      cameraPlaceholder.hidden = false;
+      cameraVideo.hidden = true;
+      cameraCapture.disabled = true;
+      cameraSwitch.disabled = true;
+      cameraFlash.disabled = true;
+    }
+
+    async function startCamera() {
+      stopCamera();
+      const requestId = ++cameraRequestId;
+      cameraError.hidden = true;
+      cameraPlaceholder.hidden = false;
+      cameraPlaceholder.querySelector("strong").textContent = "Mengaktifkan kamera…";
+      cameraVideo.hidden = true;
+
+      if (!navigator.mediaDevices?.getUserMedia) {
+        showCameraError("Browser tidak dapat membuka kamera di alamat ini. Gunakan foto dari perangkat, atau buka halaman melalui HTTPS/localhost.");
+        return;
+      }
+
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: false,
+          video: {
+            facingMode: { ideal: cameraFacingMode },
+            width: { ideal: 1280 },
+            height: { ideal: 960 }
+          }
+        });
+        if (requestId !== cameraRequestId || workflowView.hidden) {
+          stream.getTracks().forEach((track) => track.stop());
+          return;
+        }
+        cameraStream = stream;
+        cameraVideo.srcObject = cameraStream;
+        cameraVideo.hidden = false;
+        cameraPlaceholder.hidden = true;
+        cameraCapture.disabled = false;
+        cameraSwitch.disabled = false;
+        const track = cameraStream.getVideoTracks()[0];
+        const capabilities = track.getCapabilities?.();
+        cameraFlash.disabled = !capabilities?.torch;
+        await cameraVideo.play();
+      } catch (error) {
+        if (requestId !== cameraRequestId) return;
+        const message = error.name === "NotAllowedError" || error.name === "PermissionDeniedError"
+          ? "Izin kamera ditolak. Izinkan akses kamera di pengaturan browser, atau pilih foto dari perangkat."
+          : error.name === "NotFoundError" || error.name === "DevicesNotFoundError"
+            ? "Kamera tidak ditemukan. Pilih foto dari perangkat untuk melanjutkan."
+            : error.name === "NotReadableError" || error.name === "TrackStartError"
+              ? "Kamera sedang dipakai aplikasi lain. Tutup aplikasi tersebut atau pilih foto dari perangkat."
+              : "Kamera tidak dapat dibuka. Periksa izin kamera atau pilih foto dari perangkat.";
+        stopCamera();
+        showCameraError(message);
+      }
+    }
+
+    function setCameraImage(file) {
+      if (capturedPhotoUrl) URL.revokeObjectURL(capturedPhotoUrl);
+      capturedPhotoUrl = URL.createObjectURL(file);
+      cameraImagePreview.src = capturedPhotoUrl;
+      cameraImagePreview.hidden = false;
+      cameraVideo.hidden = true;
+      cameraPlaceholder.hidden = true;
+      stopCamera();
+    }
+
+    function renderDetectionResults() {
+      detectionList.replaceChildren();
+      detectionSummary.textContent = detectedItems.length
+        ? (typeof window.detectCompostWaste === "function"
+          ? `AI mendeteksi ${detectedItems.length} jenis sampah dari foto kamu:`
+          : `Contoh hasil deteksi (${detectedItems.length} jenis sampah):`)
+        : "Belum ada sampah yang terdeteksi dari foto kamu.";
+      detectedItems.forEach((item) => {
+        const card = document.createElement("article");
+        card.className = "detection-card";
+        const art = document.createElement("span");
+        art.className = "waste-art";
+        art.textContent = item.emoji || "♻️";
+        art.setAttribute("aria-hidden", "true");
+        const info = document.createElement("div");
+        info.className = "waste-card-info";
+        const name = document.createElement("span");
+        name.className = "waste-name";
+        name.textContent = item.name;
+        const bar = document.createElement("div");
+        bar.className = "waste-confidence";
+        const fill = document.createElement("span");
+        fill.style.width = `${Math.max(0, Math.min(100, Number(item.confidence) || 0))}%`;
+        bar.append(fill);
+        info.append(name, bar);
+        const percentage = document.createElement("span");
+        percentage.className = "waste-percent";
+        percentage.textContent = `${Number(item.confidence) || 0}%`;
+        card.append(art, info, percentage);
+        detectionList.append(card);
+      });
+      document.querySelector("#to-confirm").disabled = detectedItems.length === 0;
+      const correctionButton = document.querySelector("#detection-correction");
+      correctionButton.hidden = detectedItems.length === 0;
+      correctionButton.textContent = "Ada yang salah / tidak terdeteksi";
+      setWorkflowScreen("results");
+    }
+
+    // Define window.detectCompostWaste(file) to return [{ name, confidence, emoji?, category? }]; [] means no detections.
+    async function processCapturedPhoto(file) {
+      const requestId = ++detectionRequestId;
+      detectedItems = [];
+      clearWorkflowError();
+      setWorkflowScreen("results");
+      detectionSummary.textContent = "Memeriksa foto…";
+      detectionList.replaceChildren();
+      try {
+        if (typeof window.detectCompostWaste === "function") {
+          const results = await window.detectCompostWaste(file);
+          if (requestId !== detectionRequestId || workflowView.hidden) return;
+          detectedItems = Array.isArray(results)
+            ? results.filter((item) => item && typeof item.name === "string" && item.name.trim())
+              .map((item) => {
+                const confidence = Number(item.confidence) || 0;
+                return {
+                  name: item.name.trim(),
+                  confidence: confidence > 0 && confidence <= 1 ? confidence * 100 : confidence,
+                  emoji: typeof item.emoji === "string" ? item.emoji : "♻️",
+                  category: typeof item.category === "string" ? item.category : "Kompos"
+                };
+              })
+            : [];
+        } else {
+          await new Promise((resolve) => window.setTimeout(resolve, 400));
+          if (requestId !== detectionRequestId || workflowView.hidden) return;
+          detectedItems = demoDetections.map((item) => ({ ...item }));
+        }
+      } catch (error) {
+        if (requestId !== detectionRequestId || workflowView.hidden) return;
+        renderDetectionResults();
+        document.querySelector("#detection-correction").hidden = false;
+        document.querySelector("#detection-correction").textContent = "Masukkan sampah secara manual";
+        showWorkflowError("Deteksi gagal dijalankan. Periksa koneksi layanan AI atau masukkan sampah secara manual.");
+        return;
+      }
+
+      if (detectedItems.length === 0) {
+        setWorkflowScreen("no-detection");
+        return;
+      }
+      renderDetectionResults();
+    }
+
+    function revokeCapturedPhoto() {
+      if (capturedPhotoUrl) {
+        URL.revokeObjectURL(capturedPhotoUrl);
+        capturedPhotoUrl = null;
+      }
+      cameraImagePreview.removeAttribute("src");
+      cameraImagePreview.hidden = true;
+    }
+
+    async function openCamera() {
+      workflowReturnScreen = phone.dataset.screen === "wadah" ? "Wadah" : "Beranda";
+      phone.dataset.workflow = "camera";
+      notificationLayer.hidden = true;
+      notificationButton.setAttribute("aria-expanded", "false");
+      selectedManualItems = [];
+      detectedItems = [];
+      revokeCapturedPhoto();
+      clearWorkflowError();
+      setWorkflowScreen("camera");
+      await startCamera();
+    }
+
+    function closeWasteFlow(message = "") {
+      stopCamera();
+      detectionRequestId += 1;
+      workflowView.hidden = true;
+      phone.removeAttribute("data-workflow");
+      revokeCapturedPhoto();
+      clearWorkflowError();
+      showScreen(workflowReturnScreen);
+      document.querySelectorAll(".nav-item").forEach((item) => {
+        const active = item.dataset.tab === workflowReturnScreen;
+        item.classList.toggle("active", active);
+        item.setAttribute("aria-pressed", String(active));
+      });
+      if (message) showToast(message);
+    }
+
+    function showManual(returnScreen) {
+      manualReturnScreen = returnScreen;
+      manualInput.value = "";
+      selectedManualItems = [];
+      renderManualPicks();
+      renderManualSuggestions("");
+      manualFindButton.textContent = "Cari";
+      document.querySelector("#not-found-back").textContent = returnScreen === "confirm"
+        ? "Kembali ke Konfirmasi"
+        : returnScreen === "no-detection"
+          ? "Kembali"
+          : "Kembali ke Hasil Deteksi";
+      setWorkflowScreen("manual");
+      manualInput.focus();
+    }
+
+    function renderConfirmation() {
+      confirmList.replaceChildren();
+      detectedItems.forEach((item, index) => {
+        const label = document.createElement("label");
+        label.className = "confirm-card";
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.className = "confirm-check";
+        checkbox.checked = item.confirmed !== false;
+        checkbox.dataset.confirmIndex = String(index);
+        checkbox.setAttribute("aria-label", `Pilih ${item.name}`);
+        const art = document.createElement("span");
+        art.className = "waste-art";
+        art.textContent = item.emoji || "♻️";
+        art.setAttribute("aria-hidden", "true");
+        const info = document.createElement("span");
+        info.className = "waste-card-info";
+        const name = document.createElement("span");
+        name.className = "waste-name";
+        name.textContent = item.name;
+        const category = document.createElement("span");
+        category.className = "notification-description";
+        category.textContent = item.category || "Kompos";
+        info.append(name, category);
+        label.append(checkbox, art, info);
+        confirmList.append(label);
+      });
+      confirmCount.textContent = `${detectedItems.length} sampah siap diproses:`;
+      updateConfirmSelection();
+      setWorkflowScreen("confirm");
+    }
+
+    function updateConfirmSelection() {
+      const checkboxes = [...confirmList.querySelectorAll(".confirm-check")];
+      const selected = checkboxes.filter((item) => item.checked).length;
+      checkboxes.forEach((checkbox) => {
+        const item = detectedItems[Number(checkbox.dataset.confirmIndex)];
+        if (item) item.confirmed = checkbox.checked;
+      });
+      confirmAdd.disabled = selected === 0;
+      confirmAdd.textContent = `Tambahkan ${selected} sampah terpilih`;
+      document.querySelector("#toggle-all-confirm").textContent = selected === checkboxes.length
+        ? "Batalkan semua"
+        : "Pilih semua";
+    }
+
+    function beginWasteReview() {
+      confirmedItems = [...confirmList.querySelectorAll(".confirm-check:checked")]
+        .map((checkbox) => {
+          const sourceIndex = Number(checkbox.dataset.confirmIndex);
+          const item = detectedItems[sourceIndex];
+          return item ? { ...item, sourceIndex, processable: null } : null;
+        })
+        .filter(Boolean);
+      if (!confirmedItems.length) {
+        showToast("Pilih setidaknya satu sampah untuk dilanjutkan");
+        return;
+      }
+      reviewIndex = 0;
+      reviewTotal = confirmedItems.length;
+      reviewShowingRejection = false;
+      renderWasteReview();
+    }
+
+    function getWasteCondition(item) {
+      const name = item.name.toLocaleLowerCase("id");
+      if (/pisang/.test(name)) {
+        return {
+          question: "Apakah kulit pisang sudah berjamur hitam?",
+          reason: "Kulit pisang yang sudah berjamur hitam menandakan pembusukan. Bahan ini sebaiknya tidak dimasukkan ke olahan."
+        };
+      }
+      if (/jeruk|nanas|apel|buah|kulit/.test(name) && !/telur/.test(name)) {
+        return {
+          question: `Apakah ${item.name.toLocaleLowerCase("id")} sudah berjamur atau membusuk?`,
+          reason: `${item.name} yang sudah berjamur atau membusuk tidak cocok digunakan untuk olahan ini.`
+        };
+      }
+      if (/bawang/.test(name)) {
+        return {
+          question: "Apakah bawang sudah berjamur, berlendir, atau berbau busuk?",
+          reason: "Bawang yang berjamur, berlendir, atau membusuk tidak cocok digunakan untuk olahan."
+        };
+      }
+      if (/cangkang telur|kulit telur/.test(name)) {
+        return {
+          question: "Apakah cangkang telur tercampur bahan kimia atau sampah non-organik?",
+          reason: "Cangkang telur yang tercampur bahan kimia atau sampah non-organik tidak aman untuk diolah."
+        };
+      }
+      if (/daun/.test(name)) {
+        return {
+          question: "Apakah daun terkena pestisida atau tercampur bahan kimia?",
+          reason: "Daun yang terkena pestisida atau bahan kimia sebaiknya tidak dimasukkan ke kompos."
+        };
+      }
+      if (/nasi|beras|roti|pasta|sayur|kopi/.test(name)) {
+        return {
+          question: `Apakah ${item.name.toLocaleLowerCase("id")} tercampur minyak berlebihan, sabun, atau bahan kimia?`,
+          reason: `${item.name} yang tercampur minyak berlebihan, sabun, atau bahan kimia dapat mengganggu proses pengolahan.`
+        };
+      }
+      return {
+        question: `Apakah ${item.name.toLocaleLowerCase("id")} sudah berjamur atau tercampur bahan kimia?`,
+        reason: `${item.name} yang berjamur atau tercampur bahan kimia tidak aman untuk diolah.`
+      };
+    }
+
+    function renderWasteReview() {
+      reviewList.replaceChildren();
+      const item = confirmedItems[reviewIndex];
+      if (!item) {
+        confirmedItems
+          .filter((confirmedItem) => confirmedItem.processable === false)
+          .forEach((rejectedItem) => {
+            if (Number.isInteger(rejectedItem.sourceIndex) && detectedItems[rejectedItem.sourceIndex]) {
+              detectedItems[rejectedItem.sourceIndex].confirmed = false;
+            }
+          });
+        confirmedItems = confirmedItems.filter((confirmedItem) => confirmedItem.processable === true);
+        if (!confirmedItems.length) {
+          renderConfirmation();
+          showToast("Tidak ada sampah yang memenuhi kondisi untuk diolah");
+          return;
+        }
+        startQuantityEntry();
+        return;
+      }
+
+      const progress = document.createElement("div");
+      progress.className = "review-progress";
+      const track = document.createElement("span");
+      track.className = "review-progress-track";
+      const fill = document.createElement("span");
+      fill.style.width = `${((reviewIndex + 1) / reviewTotal) * 100}%`;
+      track.append(fill);
+      const progressLabel = document.createElement("span");
+      progressLabel.textContent = `Sampah ${reviewIndex + 1} dari ${reviewTotal}`;
+      progress.append(track, progressLabel);
+      reviewList.append(progress);
+
+      if (reviewShowingRejection) {
+        const condition = getWasteCondition(item);
+        const rejected = document.createElement("section");
+        rejected.className = "review-rejected";
+        const icon = document.createElement("span");
+        icon.className = "review-rejected-icon";
+        icon.textContent = "×";
+        icon.setAttribute("aria-hidden", "true");
+        const title = document.createElement("h3");
+        title.textContent = "Tidak Bisa Dipakai";
+        const reason = document.createElement("p");
+        reason.textContent = condition.reason;
+        const next = document.createElement("button");
+        next.type = "button";
+        next.className = "workflow-primary";
+        next.dataset.reviewAction = "skip";
+        next.textContent = "Lewati dan Lanjut →";
+        rejected.append(icon, title, reason, next);
+        reviewList.append(rejected);
+        setWorkflowScreen("review");
+        next.focus();
+        return;
+      }
+
+      const condition = getWasteCondition(item);
+      const card = document.createElement("section");
+      card.className = "review-question-card";
+      const picture = document.createElement("div");
+      picture.className = "review-waste-picture";
+      picture.textContent = item.emoji || "♻️";
+      picture.setAttribute("aria-hidden", "true");
+      const name = document.createElement("h3");
+      name.className = "review-waste-name";
+      name.textContent = item.name;
+      card.append(picture, name);
+      const question = document.createElement("p");
+      question.className = "review-question";
+      question.textContent = condition.question;
+      const answers = document.createElement("div");
+      answers.className = "review-answer-buttons";
+      [
+        { label: "Ya", answer: "yes", className: "yes" },
+        { label: "Tidak", answer: "no", className: "no" }
+      ].forEach((choice) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = `review-answer ${choice.className}`;
+        button.dataset.reviewAnswer = choice.answer;
+        button.textContent = choice.label;
+        answers.append(button);
+      });
+      reviewList.append(card, question, answers);
+      setWorkflowScreen("review");
+    }
+
+    function answerWasteCondition(answer) {
+      const item = confirmedItems[reviewIndex];
+      if (!item) return;
+      if (answer === "yes") {
+        item.processable = false;
+        reviewShowingRejection = true;
+      } else {
+        item.processable = true;
+        reviewIndex += 1;
+      }
+      renderWasteReview();
+    }
+
+    function skipRejectedWaste() {
+      const item = confirmedItems[reviewIndex];
+      if (!item || !reviewShowingRejection) return;
+      reviewIndex += 1;
+      reviewShowingRejection = false;
+      renderWasteReview();
+    }
+
+    function usesWeight(item) {
+      return item.quantityMode === "weight"
+        || /nasi|beras|daun kering|sisa sayur|ampas kopi/i.test(item.name);
+    }
+
+    function getEstimatedGrams(item) {
+      if (item.quantityMode === "weight") return Number(item.quantity) || 0;
+      return (Number(item.quantity) || 0) * (Number(item.estimatedGramPerUnit) || 120);
+    }
+
+    function formatWasteAmount(item) {
+      if (usesWeight(item)) return `${item.quantity} gram`;
+      const count = Number(item.quantity) || 0;
+      const unit = count === 1 ? "buah" : "buah";
+      return `${count} ${unit} (≈${Math.round(getEstimatedGrams(item))}g)`;
+    }
+
+    function renderQuantityStep() {
+      const item = quantityItems[quantityIndex];
+      if (!item) {
+        renderQuantityConfirmation();
+        return;
+      }
+      const count = quantityItems.length;
+      document.querySelector("#quantity-progress-label").textContent = `Bahan ${quantityIndex + 1} dari ${count}`;
+      document.querySelector("#quantity-progress-fill").style.width = `${((quantityIndex + 1) / count) * 100}%`;
+      quantityCard.replaceChildren();
+
+      const art = document.createElement("span");
+      art.className = "waste-art";
+      art.textContent = item.emoji || "♻️";
+      art.setAttribute("aria-hidden", "true");
+      const name = document.createElement("strong");
+      name.className = "quantity-name";
+      name.textContent = item.name;
+      const type = document.createElement("span");
+      type.className = "quantity-type";
+      type.textContent = item.category || "Sampah organik";
+      quantityCard.append(art, name, type);
+
+      if (usesWeight(item)) {
+        const inputWrap = document.createElement("label");
+        inputWrap.className = "quantity-input";
+        const input = document.createElement("input");
+        input.id = "quantity-value-input";
+        input.type = "number";
+        input.min = "0";
+        input.step = "10";
+        input.inputMode = "decimal";
+        input.value = String(item.quantity || 0);
+        input.setAttribute("aria-label", "Berat sampah dalam gram");
+        const unit = document.createElement("span");
+        unit.textContent = "gram";
+        inputWrap.append(input, unit);
+        const hint = document.createElement("p");
+        hint.className = "quantity-hint";
+        hint.textContent = "Timbang atau perkirakan beratnya, lalu ketik langsung di atas.";
+        quantityCard.append(inputWrap, hint);
+        input.addEventListener("input", () => {
+          item.quantity = Math.max(0, Number(input.value) || 0);
+          document.querySelector("#quantity-next").disabled = item.quantity <= 0;
+        });
+        document.querySelector("#quantity-next").disabled = Number(item.quantity) <= 0;
+      } else {
+        item.quantity = Math.max(1, Number(item.quantity) || 1);
+        const counter = document.createElement("div");
+        counter.className = "quantity-counter";
+        const minus = document.createElement("button");
+        minus.type = "button";
+        minus.textContent = "−";
+        minus.setAttribute("aria-label", "Kurangi jumlah");
+        const value = document.createElement("strong");
+        value.className = "quantity-value";
+        value.textContent = String(item.quantity);
+        const plus = document.createElement("button");
+        plus.type = "button";
+        plus.textContent = "+";
+        plus.setAttribute("aria-label", "Tambah jumlah");
+        counter.append(minus, value, plus);
+        const unit = document.createElement("span");
+        unit.className = "quantity-unit";
+        unit.textContent = "buah";
+        quantityCard.append(counter, unit);
+        minus.addEventListener("click", () => {
+          item.quantity = Math.max(1, Number(item.quantity) - 1);
+          value.textContent = String(item.quantity);
+        });
+        plus.addEventListener("click", () => {
+          item.quantity = Number(item.quantity) + 1;
+          value.textContent = String(item.quantity);
+        });
+        document.querySelector("#quantity-next").disabled = false;
+      }
+      setWorkflowScreen("quantity");
+    }
+
+    function startQuantityEntry() {
+      quantityItems = confirmedItems.filter((item) => item.processable === true);
+      quantityItems.forEach((item) => {
+        item.quantityMode = usesWeight(item) ? "weight" : "count";
+        item.quantity = item.quantityMode === "weight" ? Number(item.quantity) || 0 : Number(item.quantity) || 1;
+      });
+      quantityIndex = 0;
+      renderQuantityStep();
+    }
+
+    function renderQuantityConfirmation() {
+      quantityConfirmList.replaceChildren();
+      quantityItems.forEach((item) => {
+        const row = document.createElement("div");
+        row.className = "quantity-confirm-card";
+        const art = document.createElement("span");
+        art.className = "waste-art";
+        art.textContent = item.emoji || "♻️";
+        art.setAttribute("aria-hidden", "true");
+        const name = document.createElement("span");
+        name.textContent = item.name;
+        const amount = document.createElement("strong");
+        amount.textContent = formatWasteAmount(item);
+        row.append(art, name, amount);
+        quantityConfirmList.append(row);
+      });
+      setWorkflowScreen("quantity-confirm");
+    }
+
+    function getAvailableRecipes() {
+      const hasFruitWaste = quantityItems.some((item) => item.category === "Eco Enzim"
+        || /pisang|jeruk|nanas|apel|buah|kulit/i.test(item.name));
+      return [
+        {
+          type: "Kompos",
+          emoji: "🌿",
+          description: "Olah sisa makanan dan bahan organik menjadi kompos."
+        },
+        ...(hasFruitWaste
+          ? [{
+              type: "Eco Enzim",
+              emoji: "🍊",
+              description: "Olah kulit buah dengan gula dan air menjadi eco enzyme."
+            }]
+          : [])
+      ];
+    }
+
+    function renderRecipes() {
+      recipeChoice = "";
+      recipeError.hidden = true;
+      recipeList.replaceChildren();
+      getAvailableRecipes().forEach((recipe) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "recipe-card";
+        button.dataset.recipe = recipe.type;
+        button.setAttribute("aria-pressed", "false");
+        const icon = document.createElement("span");
+        icon.className = "recipe-card-icon";
+        icon.textContent = recipe.emoji;
+        const info = document.createElement("span");
+        info.className = "recipe-card-info";
+        const title = document.createElement("strong");
+        title.textContent = recipe.type;
+        const description = document.createElement("span");
+        description.textContent = recipe.description;
+        info.append(title, description);
+        const check = document.createElement("input");
+        check.type = "radio";
+        check.name = "recipe-choice";
+        check.value = recipe.type;
+        check.tabIndex = -1;
+        button.append(icon, info, check);
+        button.addEventListener("click", () => {
+          recipeChoice = recipe.type;
+          recipeError.hidden = true;
+          recipeList.querySelectorAll(".recipe-card").forEach((item) => {
+            const selected = item === button;
+            item.setAttribute("aria-pressed", String(selected));
+            item.querySelector("input").checked = selected;
+          });
+        });
+        recipeList.append(button);
+      });
+      setWorkflowScreen("type-select");
+    }
+
+    function getRecipeMaterials() {
+      const wasteGrams = quantityItems.reduce((sum, item) => sum + getEstimatedGrams(item), 0);
+      if (recipeChoice === "Eco Enzim") {
+        return [
+          { name: "Sampah kulit buah", amount: `${Math.round(wasteGrams)} g` },
+          { name: "Gula merah", amount: `${Math.max(1, Math.round(wasteGrams / 3))} g` },
+          { name: "Air bersih", amount: `${Math.max(10, Math.round(wasteGrams * 10 / 3))} ml` }
+        ];
+      }
+      return [
+        { name: "Sampah organik terpilih", amount: `${Math.round(wasteGrams)} g` },
+        { name: "Daun kering / bahan cokelat", amount: "secukupnya" },
+        { name: "Tanah atau kompos matang", amount: "secukupnya" },
+        { name: "Air bersih", amount: "secukupnya" }
+      ];
+    }
+
+    function renderVesselMaterials() {
+      materialsList.replaceChildren();
+      getRecipeMaterials().forEach((material) => {
+        const row = document.createElement("div");
+        row.className = "material-row";
+        const name = document.createElement("span");
+        name.textContent = material.name;
+        const amount = document.createElement("span");
+        amount.textContent = material.amount;
+        row.append(name, amount);
+        materialsList.append(row);
+      });
+      newVesselName.value = `${recipeChoice} ${savedVessels.length + 1}`;
+      vesselError.hidden = true;
+      setWorkflowScreen("create-vessel");
+    }
+
+    function saveNewVessel() {
+      const name = newVesselName.value.trim();
+      if (!name) {
+        vesselError.textContent = "Masukkan nama wadah terlebih dahulu.";
+        vesselError.hidden = false;
+        newVesselName.focus();
+        return;
+      }
+      if (savedVessels.some((vessel) => vessel.name.toLocaleLowerCase("id") === name.toLocaleLowerCase("id"))) {
+        vesselError.textContent = "Nama wadah sudah digunakan. Pilih nama lain.";
+        vesselError.hidden = false;
+        newVesselName.focus();
+        return;
+      }
+
+      const vessel = {
+        id: globalThis.crypto?.randomUUID?.() || `vessel-${Date.now()}`,
+        name,
+        type: recipeChoice,
+        items: quantityItems.map((item) => ({
+          name: item.name,
+          quantity: Number(item.quantity),
+          unit: item.quantityMode === "weight" ? "gram" : "buah"
+        })),
+        recipeName: recipeChoice === "Kompos" ? "Kompos Organik" : "Eco Enzim Buah Segar",
+        created: Date.now(),
+        status: "filling",
+        durationDays: recipeChoice === "Kompos" ? 30 : 90
+      };
+      ensureVesselPreparation(vessel);
+      savedVessels.unshift(vessel);
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(savedVessels));
+      } catch (error) {
+        savedVessels.shift();
+        vesselError.textContent = "Wadah gagal disimpan di browser. Periksa ruang penyimpanan lalu coba lagi.";
+        vesselError.hidden = false;
+        console.error("Wadah baru tidak dapat disimpan ke penyimpanan browser.", error);
+        return;
+      }
+
+      createSavedVesselCards(vessel);
+      refreshWadahTotals();
+      closeWasteFlow(`Wadah "${name}" berhasil disimpan ke dashboard`);
+    }
+
+    function renderManualSuggestions(query) {
+      const normalizedQuery = query.trim().toLocaleLowerCase("id");
+      const suggestions = normalizedQuery
+        ? compostSuggestions.filter((item) => item.name.toLocaleLowerCase("id").includes(normalizedQuery)).slice(0, 5)
+        : compostSuggestions.slice(0, 4);
+      manualSuggestions.replaceChildren();
+      suggestions.forEach((item) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "manual-suggestion";
+        button.role = "option";
+        button.dataset.wasteName = item.name;
+        button.dataset.category = item.category;
+        button.dataset.emoji = item.emoji;
+        const icon = document.createElement("span");
+        icon.textContent = "♧";
+        icon.setAttribute("aria-hidden", "true");
+        const name = document.createElement("span");
+        name.textContent = item.name;
+        button.append(icon, name);
+        manualSuggestions.append(button);
+      });
+      manualSuggestions.hidden = suggestions.length === 0;
+      manualInput.setAttribute("aria-expanded", String(suggestions.length > 0));
+    }
+
+    function renderManualPicks() {
+      manualPicked.replaceChildren();
+      selectedManualItems.forEach((item, index) => {
+        const row = document.createElement("div");
+        row.className = "manual-picked-item";
+        const text = document.createElement("span");
+        text.textContent = `${item.emoji} ${item.name} · ${item.category}`;
+        const remove = document.createElement("button");
+        remove.type = "button";
+        remove.setAttribute("aria-label", `Hapus ${item.name}`);
+        remove.textContent = "×";
+        remove.addEventListener("click", () => {
+          selectedManualItems.splice(index, 1);
+          renderManualPicks();
+          updateManualButton();
+        });
+        row.append(text, remove);
+        manualPicked.append(row);
+      });
+    }
+
+    function updateManualButton() {
+      manualFindButton.textContent = selectedManualItems.length
+        ? `Tambahkan ${selectedManualItems.length} sampah terpilih`
+        : "Cari";
+    }
+
+    function addManualWaste() {
+      const query = manualInput.value.trim();
+      if (query) {
+        const normalizedQuery = query.toLocaleLowerCase("id");
+        const match = compostSuggestions.find((item) => item.name.toLocaleLowerCase("id") === normalizedQuery);
+        if (!match) {
+          document.querySelector("#not-found-message").textContent =
+            `"${query}" belum ada di daftar resep kami. Coba nama lain atau kembali ke hasil deteksi.`;
+          setWorkflowScreen("not-found");
+          return;
+        }
+        if (!selectedManualItems.some((item) => item.name === match.name)) {
+          selectedManualItems.push({ ...match });
+        }
+        manualInput.value = "";
+        renderManualPicks();
+        renderManualSuggestions("");
+        updateManualButton();
+        return;
+      }
+
+      if (selectedManualItems.length) {
+        if (manualReturnScreen === "results") {
+          const newItems = selectedManualItems.filter((manualItem) =>
+            !detectedItems.some((item) => item.name.toLocaleLowerCase("id") === manualItem.name.toLocaleLowerCase("id")));
+          detectedItems.push(...newItems.map((item) => ({ ...item, confidence: 100 })));
+          renderConfirmation();
+          return;
+        }
+        if (manualReturnScreen === "confirm") {
+          const newItems = selectedManualItems.filter((manualItem) =>
+            !confirmedItems.some((item) => item.name.toLocaleLowerCase("id") === manualItem.name.toLocaleLowerCase("id")));
+          confirmedItems.push(...newItems.map((item) => ({ ...item, processable: null })));
+          renderWasteReview();
+          return;
+        }
+        confirmedItems = selectedManualItems.map((item) => ({ ...item, processable: null }));
+        renderWasteReview();
+        return;
+      }
+
+      manualInput.focus();
+      showToast("Pilih atau ketik nama sampah terlebih dahulu");
+    }
+
+    document.querySelector("#camera-capture").addEventListener("click", () => {
+      if (!cameraStream || !cameraVideo.videoWidth || !cameraVideo.videoHeight) {
+        showCameraError("Kamera belum siap. Tunggu sebentar, atau pilih foto dari perangkat.");
+        return;
+      }
+      const canvas = document.createElement("canvas");
+      canvas.width = cameraVideo.videoWidth;
+      canvas.height = cameraVideo.videoHeight;
+      canvas.getContext("2d").drawImage(cameraVideo, 0, 0, canvas.width, canvas.height);
+      canvas.toBlob((blob) => {
+        if (!blob) {
+          showCameraError("Foto tidak dapat diproses. Silakan coba lagi.");
+          return;
+        }
+        const file = new File([blob], `sampah-${Date.now()}.jpg`, { type: "image/jpeg" });
+        setCameraImage(file);
+        processCapturedPhoto(file);
+      }, "image/jpeg", .9);
+    });
+
+    document.querySelector("#camera-switch").addEventListener("click", async () => {
+      cameraFacingMode = cameraFacingMode === "environment" ? "user" : "environment";
+      await startCamera();
+    });
+
+    cameraFlash.addEventListener("click", async () => {
+      const track = cameraStream?.getVideoTracks()[0];
+      if (!track) return;
+      flashEnabled = !flashEnabled;
+      try {
+        await track.applyConstraints({ advanced: [{ torch: flashEnabled }] });
+        cameraFlash.setAttribute("aria-label", flashEnabled ? "Matikan lampu flash" : "Nyalakan lampu flash");
+      } catch (error) {
+        flashEnabled = false;
+        cameraError.textContent = "Lampu flash tidak dapat digunakan pada kamera ini.";
+        cameraError.hidden = false;
+      }
+    });
+
+    document.querySelector("#choose-photo").addEventListener("click", () => photoInput.click());
+    photoInput.addEventListener("change", () => {
+      const file = photoInput.files?.[0];
+      if (!file) return;
+      if (!file.type.startsWith("image/")) {
+        showCameraError("Pilih file gambar untuk melanjutkan.");
+        photoInput.value = "";
+        return;
+      }
+      setCameraImage(file);
+      processCapturedPhoto(file);
+      photoInput.value = "";
+    });
+
+    document.querySelector("#to-confirm").addEventListener("click", () => {
+      if (detectedItems.length) renderConfirmation();
+      else setWorkflowScreen("no-detection");
+    });
+
+    document.querySelector("#detection-correction").addEventListener("click", () => showManual("results"));
+    document.querySelector("#confirm-correction").addEventListener("click", () => showManual("confirm"));
+    confirmAdd.addEventListener("click", beginWasteReview);
+    reviewList.addEventListener("click", (event) => {
+      const action = event.target.closest("[data-review-action]");
+      if (action?.dataset.reviewAction === "skip") {
+        skipRejectedWaste();
+        return;
+      }
+      const answer = event.target.closest("[data-review-answer]")?.dataset.reviewAnswer;
+      if (answer === "yes" || answer === "no") answerWasteCondition(answer);
+    });
+    document.querySelector("#quantity-next").addEventListener("click", () => {
+      const item = quantityItems[quantityIndex];
+      if (!item || Number(item.quantity) <= 0) return;
+      quantityIndex += 1;
+      renderQuantityStep();
+    });
+    document.querySelector("#quantity-confirm-continue").addEventListener("click", renderRecipes);
+    document.querySelector("#recipe-continue").addEventListener("click", () => {
+      if (!recipeChoice) {
+        recipeError.hidden = false;
+        return;
+      }
+      renderVesselMaterials();
+    });
+    document.querySelector("#save-vessel").addEventListener("click", saveNewVessel);
+    vesselDetailContent.addEventListener("change", (event) => {
+      const checkbox = event.target.closest("[data-check-group]");
+      if (!checkbox || !selectedVessel) return;
+      const group = checkbox.dataset.checkGroup;
+      const index = Number(checkbox.dataset.checkIndex);
+      const entries = group === "materials" ? selectedVessel.materials : selectedVessel.tools;
+      const entry = entries[index];
+      if (!entry) return;
+      const previous = Boolean(entry.checked);
+      entry.checked = checkbox.checked;
+      const isSavedVessel = savedVessels.some((vessel) => vessel.id === selectedVessel.id);
+      if (isSavedVessel && !persistVessels()) {
+        entry.checked = previous;
+        checkbox.checked = previous;
+      }
+      const continueButton = document.querySelector("#vessel-detail-continue");
+      if (continueButton && getVesselStatus(selectedVessel) === "filling") {
+        continueButton.disabled = ![...selectedVessel.materials, ...selectedVessel.tools]
+          .every((item) => item.checked);
+      }
+    });
+    vesselDetailActions.addEventListener("click", (event) => {
+      if (event.target.closest("#vessel-detail-continue") && selectedVessel) {
+        renderVesselReady(selectedVessel);
+      }
+      if (event.target.closest("#vessel-mark-harvested") && selectedVessel) {
+        selectedVessel.status = "harvested";
+        selectedVessel.harvestedAt = Date.now();
+        if (savedVessels.some((vessel) => vessel.id === selectedVessel.id) && !persistVessels()) {
+          selectedVessel.status = "mature";
+          delete selectedVessel.harvestedAt;
+          renderVesselDetail(selectedVessel);
+          return;
+        }
+        renderVesselDetail(selectedVessel);
+        refreshWadahTotals();
+        updateWadahCards();
+        showToast(`${selectedVessel.name} ditandai sudah dipanen`);
+      }
+      if (event.target.closest("#vessel-add-waste-photo")) {
+        closeWasteFlow();
+        document.querySelectorAll(".nav-item").forEach((navItem) => {
+          const active = navItem.dataset.tab === "Foto";
+          navItem.classList.toggle("active", active);
+          navItem.setAttribute("aria-pressed", String(active));
+        });
+        openCamera();
+      }
+    });
+    beginFermentationButton.addEventListener("click", startVesselFermentation);
+    document.querySelector("#wadah-cards").addEventListener("click", (event) => {
+      const card = event.target.closest("[data-vessel-id]");
+      const vessel = card && vesselRecords.get(card.dataset.vesselId);
+      if (vessel) openVessel(vessel);
+    });
+    document.querySelector("main .vessels").addEventListener("click", (event) => {
+      const card = event.target.closest("[data-vessel-id]");
+      const vessel = card && vesselRecords.get(card.dataset.vesselId);
+      if (vessel) openVessel(vessel);
+    });
+    document.querySelectorAll("main .vessels, #wadah-cards").forEach((list) => {
+      list.addEventListener("keydown", (event) => {
+        if (event.key !== "Enter" && event.key !== " ") return;
+        const card = event.target.closest("[data-vessel-id]");
+        const vessel = card && vesselRecords.get(card.dataset.vesselId);
+        if (!vessel) return;
+        event.preventDefault();
+        openVessel(vessel);
+      });
+    });
+    document.querySelector("#retry-camera").addEventListener("click", () => {
+      detectedItems = [];
+      confirmedItems = [];
+      selectedManualItems = [];
+      revokeCapturedPhoto();
+      setWorkflowScreen("camera");
+      startCamera();
+    });
+    document.querySelector("#manual-from-empty").addEventListener("click", () => showManual("no-detection"));
+    document.querySelector("#toggle-all-confirm").addEventListener("click", () => {
+      const checkboxes = [...confirmList.querySelectorAll(".confirm-check")];
+      const checkAll = checkboxes.some((checkbox) => !checkbox.checked);
+      checkboxes.forEach((checkbox) => { checkbox.checked = checkAll; });
+      updateConfirmSelection();
+    });
+    confirmList.addEventListener("change", updateConfirmSelection);
+
+    manualInput.addEventListener("input", () => renderManualSuggestions(manualInput.value));
+    manualInput.addEventListener("focus", () => renderManualSuggestions(manualInput.value));
+    manualInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        const firstSuggestion = manualSuggestions.querySelector(".manual-suggestion");
+        const exactSuggestion = [...manualSuggestions.querySelectorAll(".manual-suggestion")]
+          .some((suggestion) => suggestion.dataset.wasteName.toLocaleLowerCase("id")
+            === manualInput.value.trim().toLocaleLowerCase("id"));
+        if (firstSuggestion && manualInput.value.trim() && !exactSuggestion) {
+          manualInput.value = firstSuggestion.dataset.wasteName;
+          manualSuggestions.hidden = true;
+          manualInput.setAttribute("aria-expanded", "false");
+        } else {
+          addManualWaste();
+        }
+      }
+    });
+    manualSuggestions.addEventListener("click", (event) => {
+      const suggestion = event.target.closest(".manual-suggestion");
+      if (!suggestion) return;
+      manualInput.value = suggestion.dataset.wasteName;
+      manualSuggestions.hidden = true;
+      manualInput.setAttribute("aria-expanded", "false");
+      manualInput.focus();
+    });
+    manualFindButton.addEventListener("click", addManualWaste);
+    document.querySelector("#try-another-name").addEventListener("click", () => {
+      setWorkflowScreen("manual");
+      manualInput.focus();
+      manualInput.select();
+    });
+    document.querySelector("#not-found-back").addEventListener("click", () => {
+      setWorkflowScreen(manualReturnScreen);
+    });
+
+    workflowView.addEventListener("click", (event) => {
+      const backButton = event.target.closest("[data-workflow-back]");
+      if (!backButton) return;
+      const targetScreen = backButton.dataset.workflowBack;
+      if (targetScreen) {
+        if (targetScreen === "vessel-close") {
+          closeWasteFlow();
+        } else {
+          setWorkflowScreen(targetScreen === "manual-return" ? manualReturnScreen : targetScreen);
+        }
+      } else {
+        closeWasteFlow();
+      }
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && !workflowView.hidden) {
+        closeWasteFlow();
+      }
+    });
+
+    document.querySelectorAll("[data-status-filter]").forEach((tab) => {
+      tab.addEventListener("click", () => {
+        wadahStatusFilter = tab.dataset.statusFilter;
+        document.querySelectorAll("[data-status-filter]").forEach((item) => {
+          item.setAttribute("aria-selected", String(item === tab));
+        });
+        updateWadahCards();
+      });
+    });
+
+    document.querySelectorAll("[data-type-filter]").forEach((filter) => {
+      filter.addEventListener("click", () => {
+        wadahTypeFilter = filter.dataset.typeFilter;
+        document.querySelectorAll("[data-type-filter]").forEach((item) => {
+          item.setAttribute("aria-pressed", String(item === filter));
+        });
+        updateWadahCards();
+      });
+    });
+
+    document.querySelectorAll(".wadah-sort").forEach((sortButton) => {
+      sortButton.addEventListener("click", () => {
+        document.querySelectorAll(".wadah-sort").forEach((item) => {
+          item.setAttribute("aria-pressed", String(item === sortButton));
+        });
+        updateWadahCards();
+      });
+    });
+
+    document.querySelectorAll(".nav-item").forEach((item) => {
+      item.addEventListener("click", () => {
+        document.querySelectorAll(".nav-item").forEach((navItem) => {
+          const active = navItem === item;
+          navItem.classList.toggle("active", active);
+          navItem.setAttribute("aria-pressed", String(active));
+        });
+        if (item.dataset.tab === "Wadah" || item.dataset.tab === "Beranda") {
+          if (!workflowView.hidden) closeWasteFlow();
+          showScreen(item.dataset.tab);
+        } else if (item.dataset.tab === "Foto") {
+          openCamera();
+        } else {
+          showToast(`${item.dataset.tab} dipilih`);
+        }
+      });
+    });
+
+    window.setInterval(() => {
+      vesselRecords.forEach((vessel) => {
+        const previousStatus = vessel.status;
+        updateVesselCard(vessel);
+        if (previousStatus !== vessel.status && vessel.status === "mature"
+          && savedVessels.some((savedVessel) => savedVessel.id === vessel.id)) {
+          persistVessels();
+        }
+      });
+      refreshWadahTotals();
+      if (selectedVessel && phone.dataset.workflow === "vessel-detail") {
+        const status = getVesselStatus(selectedVessel);
+        const subtitle = document.querySelector(".vessel-detail-hero .vessel-detail-subtitle");
+        const progressLabel = document.querySelectorAll(".vessel-detail-hero .vessel-detail-subtitle")[1];
+        if (subtitle) {
+          subtitle.textContent = `${selectedVessel.type} · ${status === "filling" ? "Mengisi" : status === "mature" ? "Matang" : status === "harvested" ? "Sudah dipanen" : "Fermentasi"}`;
+        }
+        if (progressLabel) {
+          const days = vesselDuration(selectedVessel);
+          const elapsed = Math.min(days, Math.floor(
+            (Date.now() - (selectedVessel.fermentationStarted || Date.now())) / 86400000
+          ));
+          progressLabel.textContent = status === "mature" || status === "harvested"
+            ? `Fermentasi selesai · ${days} hari`
+            : `Hari ke-${elapsed} dari ${days} · ${getVesselProgress(selectedVessel)}%`;
+        }
+        if (status === "fermenting") {
+          const days = vesselDuration(selectedVessel);
+          const elapsed = Math.min(days, Math.floor(
+            (Date.now() - (selectedVessel.fermentationStarted || Date.now())) / 86400000
+          ));
+          const remaining = Math.max(0, days - elapsed);
+          const estimate = new Date((selectedVessel.fermentationStarted || Date.now()) + days * 86400000);
+          const number = document.querySelector(".vessel-phase-number");
+          const caption = document.querySelector(".vessel-phase-caption");
+          const fill = document.querySelector(".vessel-phase-progress span");
+          const estimateLabel = document.querySelector(".vessel-estimate");
+          if (number) number.textContent = String(elapsed);
+          if (caption) caption.textContent = `${elapsed} dari ${days} hari total`;
+          if (fill) fill.style.width = `${getVesselProgress(selectedVessel)}%`;
+          if (estimateLabel) {
+            estimateLabel.textContent = `◷ Estimasi matang: ${estimate.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })} · ${remaining} hari lagi`;
+          }
+        } else if (status === "mature") {
+          renderVesselDetail(selectedVessel);
+        }
+        const action = document.querySelector("#vessel-detail-continue");
+        if (action && status === "mature") {
+          action.textContent = "Wadah Siap Dipanen";
+          action.disabled = true;
+        }
+      }
+    }, 60000);
+
+  </script>
+</body>
+</html>
