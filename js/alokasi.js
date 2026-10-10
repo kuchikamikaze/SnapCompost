@@ -25,7 +25,7 @@ export function buatSesiAlokasi(batch, wadahList) {
     jumlah: (idW, idE) => alokasi[idW]?.[idE] ?? 0,                              // gram
     // Satuan isian & tampilan per entri: 'hitungan' (cangkang_telur) → butir, selain itu gram.
     satuanInput: idE => {
-      const m = C.ref().peta.get(pool.get(idE).nama_sampah);
+      const m = C.dataSampah(pool.get(idE).nama_sampah);
       return m.tipe_input === 'hitungan'
         ? { tipe: 'hitungan', satuan: 'butir', gramPerSatuan: m.berat_per_satuan }
         : { tipe: 'berat_langsung', satuan: 'g', gramPerSatuan: 1 };

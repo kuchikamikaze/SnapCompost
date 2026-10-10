@@ -79,8 +79,8 @@ export function detailWadah(w, items, hariIni) {
     }),
     // Baris jumlah 0 disembunyikan; belum tercentang & sudah ada yang dituang → "+ sisa". Mode proses/matang: tampilkan sebagai list biasa.
     checklist: Object.entries(c).filter(([, x]) => x.jumlah > 0).map(([kunci, x]) => {
-      const b = C.teksBahan(kunci), sisa = C.sisaDituang(kunci), plus = !x.tercentang && sisa > 0;
-      return { kunci, teks: b.teks, tercentang: x.tercentang, teksJumlah: plus ? `+ ${C.sisa(x)} ${b.satuan}` : `${x.jumlah} ${b.satuan}` };
+      const b = C.teksBahan(kunci), sisa = C.sisaDituang(x), plus = !x.tercentang && (x.sudah_dituang || 0) > 0 && sisa > 0; // "+ X" hanya bila sudah ada yang dituang DAN masih ada sisa
+      return { kunci, teks: b.teks, tercentang: x.tercentang, teksJumlah: plus ? `+ ${sisa} ${b.satuan}` : `${x.jumlah} ${b.satuan}` };
     }),
     alat: ref.alat_modifikasi.filter(a => a.nama_resep === w.nama_resep),
     langkah: ref.langkah_resep.filter(l => l.nama_resep === w.nama_resep).sort((a, b) => a.urutan - b.urutan).map(l => l.detail_langkah),
@@ -108,6 +108,7 @@ export function rencanaMulaiFermentasi(w, hariIni = C.hariIniWIB()) {
 // Hapus item (9a). perluDialogTerakhir=true → tampilkan dialog "Hapus Item & Wadah" / "Kembali" dulu.
 export function rencanaHapusItem(w, items, idItem) {
   if (efektif(w) !== 'sedang_mengisi') throw new Error('Wadah tidak menerima perubahan');
+  if (!items.some(i => i.id === idItem)) throw new Error('Item tidak ditemukan di wadah.');
   if (items.length === 1) return { perluDialogTerakhir: true, payload: { id_item: idItem, hapus_wadah: true } };
   const sisa = items.filter(i => i.id !== idItem);
   return { perluDialogTerakhir: false, payload: { id_item: idItem, hapus_wadah: false,

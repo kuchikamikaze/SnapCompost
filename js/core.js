@@ -26,10 +26,17 @@ export function muatReferensi(d) {
   REF = { ...d, peta: new Map(d.sampah_organik.map(s => [s.nama, s])) };
 }
 export const ref = () => REF;
+// Ambil data satu label untuk PERHITUNGAN; error jelas bila nama tidak ada di JSON (mis. label dihapus/diganti nama setelah wadah tersimpan).
+// Jalur tampilan boleh toleran (lihat teksBahan, detailWadah); perhitungan tidak boleh diam-diam menganggap 0/'full'.
+export function dataSampah(nama) {
+  const s = REF.peta.get(nama);
+  if (!s) throw new Error(`Bahan "${nama}" tidak ada di data referensi. Perbarui aplikasi atau hapus item ini.`);
+  return s;
+}
 
 // ---------- §2 Penentuan resep ----------
 export function dapatkanStatus(entri, namaResep) {
-  let status = REF.peta.get(entri.nama_sampah)?.['status_' + namaResep] ?? 'full';
+  let status = dataSampah(entri.nama_sampah)['status_' + namaResep] ?? 'full';
   for (const id of entri.kondisi_tercentang ?? []) {
     const k = REF.syarat_sampah.find(x => x.id === id);
     if (k?.efek_status?.[namaResep] === 'excluded') status = 'excluded'; // hanya mempersempit
@@ -51,15 +58,15 @@ export function daftarKondisiUntukLabel(nama) {
 
 // ---------- §4 Perlakuan (dengan override_per_resep) ----------
 export function perlakuan(nama, namaResep) {
-  const s = REF.peta.get(nama);
-  const m = { ...s, ...(s?.override_per_resep?.[namaResep] ?? {}) };
+  const s = dataSampah(nama);
+  const m = { ...s, ...(s.override_per_resep?.[namaResep] ?? {}) };
   return { instruksi: m.instruksi_perlakuan, wajib: m.wajib_perlakuan };
 }
 
 // ---------- §7.3 Input jumlah ----------
 export function konversiKeGram(nama, jumlah) {
-  const s = REF.peta.get(nama);
-  return s?.tipe_input === 'hitungan' ? Math.round(jumlah * s.berat_per_satuan) : jumlah;
+  const s = dataSampah(nama);
+  return s.tipe_input === 'hitungan' ? Math.round(jumlah * s.berat_per_satuan) : jumlah;
 }
 export function validasiInputJumlah(nama, teks, izinkanNol = false) {
   const t = String(teks).trim();
@@ -73,10 +80,8 @@ export function validasiInputJumlah(nama, teks, izinkanNol = false) {
 
 // ---------- §5 Bahan pendukung (murni, rasio semua dari JSON) ----------
 export function hitungBahanCoklat(items) {
-  return Math.round(items.reduce((t, i) => {
-    const refItem = REF.peta.get(i.nama_sampah);
-    return t + i.berat * (refItem?.faktor_bahan_coklat ?? 0);
-  }, 0));
+  // cangkang_telur punya faktor null (terpisah dari rasio) → dihitung 0
+  return Math.round(items.reduce((t, i) => t + i.berat * (dataSampah(i.nama_sampah).faktor_bahan_coklat ?? 0), 0));
 }
 function formula(namaResep, items, agg) {
   const p = REF.parameter_resep.find(x => x.nama_resep === namaResep);
@@ -95,7 +100,7 @@ function formula(namaResep, items, agg) {
 export function hitungBahanPendukung(items, namaResep) {
   if (!items.length) return {};
   const agg = {};
-  for (const i of items) { const k = 'S_' + REF.peta.get(i.nama_sampah).kategori_kompos; agg[k] = (agg[k] || 0) + i.berat; }
+  for (const i of items) { const k = 'S_' + dataSampah(i.nama_sampah).kategori_kompos; agg[k] = (agg[k] || 0) + i.berat; }
   return Object.fromEntries(Object.entries(formula(namaResep, items, agg)).filter(([, v]) => v > 0));
 }
 
@@ -117,7 +122,7 @@ export function hitungChecklistBaru(lama = {}, baru) {
 export const checklistLengkap = c => Object.values(c || {}).every(x => x.tercentang);
 export function teksBahan(kunci) {
   const b = REF.bahan_pendukung.find(x => x.nama === kunci);
-  return { teks: (b?.label_tampilan ?? kunci) + (b?.keterangan ? ` (${b.keterangan})` : ''), satuan: b?.satuan ?? 'g' };
+  return { teks: (b?.label_tampilan ?? kunci) + (b?.keterangan ? ` (${b.keterangan})` : ''), satuan: b?.satuan ?? '' };
 }
 
 // ---------- §8 Jadwal & progress (tanggal kalender WIB) ----------
@@ -208,8 +213,8 @@ export function buatSesiScan() {
     return [...s.terverifikasi.values()]; // daftar_entri, satu entri per label
   };
   s.lanjutDiCek = dicentang => {
-    for (const n of dicentang) s.terverifikasi.set(n, { nama: n, confidence: s.kandidat.get(n).confidence, sumber: 'ai' });
-    s.kandidat = new Map();
+    for (const n of dicentang) if (s.kandidat.has(n)) s.terverifikasi.set(n, { nama: n, confidence: s.kandidat.get(n).confidence, sumber: 'ai' });
+    s.kandidat = new Map(); // yang tidak dicentang dibuang
     return 'perbaiki';      // layar berikutnya (pakai replaceState)
   };
   // Data layar Hasil Deteksi: terverifikasi (✓) dulu, lalu kandidat (urut confidence tertinggi).
