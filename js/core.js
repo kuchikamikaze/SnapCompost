@@ -1,4 +1,5 @@
 // core.js — logika murni SnapCompost (tanpa DOM, tanpa Supabase). Spesifikasi §2–§8.
+
 export const BATAS_KONFIRMASI_GRAM = 10000;
 export const BATAS_MAKS_GRAM = 1000000;
 export const AMBANG_MIRIP = 0.45, MAKS_SARAN = 5, MIN_HURUF = 2;
