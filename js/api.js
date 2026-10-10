@@ -11,12 +11,6 @@ export function buatApi(sb) {
     const { data, error } = await q; 
     if (error) {
       console.error('Supabase/RPC Error Detail:', error); // <-- Log error asli untuk debugging developer
-      
-      // Pesan bisnis khusus (ditangkap dari RAISE EXCEPTION di RPC SQL)
-      if (error.message?.includes('tidak bisa ditambah sampah baru') || error.message?.includes('tidak menerima perubahan')) {
-        throw new Error('Wadah sudah tidak menerima bahan baru.');
-      }
-      
       throw new Error(pesan); 
     }
     return data; 
@@ -34,6 +28,7 @@ export function buatApi(sb) {
     
     // [PERBAIKAN 2] Gunakan maybeSingle() agar tidak crash saat login pertama (Race Condition Trigger)
     profil: async () => {
+      online(); // offline → "Butuh internet", konsisten dengan fungsi lain
       const { data, error } = await sb.from('user').select('*').maybeSingle();
       if (error) {
         console.error('Supabase Error (profil):', error);
