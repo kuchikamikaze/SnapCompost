@@ -1,5 +1,6 @@
 // api.js — satu-satunya tempat yang menyentuh Supabase. Pakai: const api = buatApi(supabaseClient)
 // Aturan: tampilan diperbarui HANYA setelah promise berhasil; bila melempar Error, tampilkan error.message.
+
 import { hariIniWIB } from './core.js';
 
 export function buatApi(sb) {
