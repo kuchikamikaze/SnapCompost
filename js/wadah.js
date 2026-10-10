@@ -79,8 +79,8 @@ export function detailWadah(w, items, hariIni) {
     }),
     // Baris jumlah 0 disembunyikan; belum tercentang & sudah ada yang dituang → "+ sisa". Mode proses/matang: tampilkan sebagai list biasa.
     checklist: Object.entries(c).filter(([, x]) => x.jumlah > 0).map(([kunci, x]) => {
-      const b = C.teksBahan(kunci), plus = !x.tercentang && (x.sudah_dituang || 0) > 0;
-      return { kunci, teks: b.teks, tercentang: x.tercentang, teksJumlah: plus ? `+ ${C.sisaDituang(x)} ${b.satuan}` : `${x.jumlah} ${b.satuan}` };
+      const b = C.teksBahan(kunci), sisa = C.sisaDituang(kunci), plus = !x.tercentang && sisa > 0;
+      return { kunci, teks: b.teks, tercentang: x.tercentang, teksJumlah: plus ? `+ ${C.sisa(x)} ${b.satuan}` : `${x.jumlah} ${b.satuan}` };
     }),
     alat: ref.alat_modifikasi.filter(a => a.nama_resep === w.nama_resep),
     langkah: ref.langkah_resep.filter(l => l.nama_resep === w.nama_resep).sort((a, b) => a.urutan - b.urutan).map(l => l.detail_langkah),
@@ -118,6 +118,7 @@ export function rencanaHapusItem(w, items, idItem) {
 export function rencanaUbahJumlah(w, items, idItem, teks) {
   if (efektif(w) !== 'sedang_mengisi') throw new Error('Wadah tidak menerima perubahan');
   const item = items.find(i => i.id === idItem);
+  if (!item) throw new Error('Item tidak ditemukan di wadah.'); // Guard baru
   const v = C.validasiInputJumlah(item.nama_sampah, teks, true);
   if (!v.valid) return { aksi: 'tolak', pesan: v.pesan };
   if (v.nilai === 0) return { aksi: 'hapus', ...rencanaHapusItem(w, items, idItem) };
