@@ -1,5 +1,4 @@
 // alokasi.js — Alokasi Cerdas & Shared Pool (§2.1). Semua fungsi MURNI: tidak menulis apa pun ke Supabase.
-
 import * as C from './core.js';
 
 const statusW = w => w.status_efektif ?? w.status;
@@ -21,19 +20,30 @@ export function buatSesiAlokasi(batch, wadahList) {
 
   const sesi = {
     kandidat, pool,
-    sisa: idE => pool.get(idE).berat_gram - terpakai(idE),                       // tampil live, tanpa tombol "hitung"
+    sisa: idE => pool.get(idE).berat_gram - terpakai(idE),                       // tampil live, tanpa tombol "hitung" (selalu gram)
     sisaSemua: () => Object.fromEntries([...pool.keys()].map(id => [id, sesi.sisa(id)])),
-    jumlah: (idW, idE) => alokasi[idW]?.[idE] ?? 0,
+    jumlah: (idW, idE) => alokasi[idW]?.[idE] ?? 0,                              // gram
+    // Satuan isian & tampilan per entri: 'hitungan' (cangkang_telur) → butir, selain itu gram.
+    satuanInput: idE => {
+      const m = C.ref().peta.get(pool.get(idE).nama_sampah);
+      return m.tipe_input === 'hitungan'
+        ? { tipe: 'hitungan', satuan: 'butir', gramPerSatuan: m.berat_per_satuan }
+        : { tipe: 'berat_langsung', satuan: 'g', gramPerSatuan: 1 };
+    },
+    // Nilai untuk ditampilkan di kolom/label (butir untuk hitungan, gram untuk lainnya)
+    jumlahTampil: (idW, idE) => sesi.jumlah(idW, idE) / sesi.satuanInput(idE).gramPerSatuan,
+    sisaTampil: idE => sesi.sisa(idE) / sesi.satuanInput(idE).gramPerSatuan,
     alokasi: () => structuredClone(alokasi),
     // Dipanggil tiap user mengubah satu kolom. Kolom kosong = 0. Tidak mengubah state bila ditolak.
+    // `teks` memakai satuan sesi.satuanInput(idE): butir untuk hitungan, gram untuk berat_langsung.
     atur(idW, idE, teks) {
       const t = String(teks).trim() || '0';
       if (!/^[0-9]+$/.test(t)) return { ok: false, pesan: 'Masukkan angka bulat saja, tanpa koma, titik, atau satuan.' };
       if (!cocok.get(idW)?.has(idE)) return { ok: false, pesan: 'Bahan ini tidak cocok untuk wadah tersebut.' };
-      const gram = Number(t);
+      const gram = C.konversiKeGram(pool.get(idE).nama_sampah, Number(t)); // butir → gram (hitungan), apa adanya (berat_langsung)
       if (gram - sesi.jumlah(idW, idE) > sesi.sisa(idE)) return { ok: false, pesan: 'Melebihi sisa bahan yang tersedia.' };
       (alokasi[idW] ??= {})[idE] = gram;
-      return { ok: true, sisa: sesi.sisa(idE) };
+      return { ok: true, sisa: sesi.sisa(idE), sisaTampil: sesi.sisaTampil(idE) };
     },
     batchSisa: () => [...pool.values()].map(e => ({ ...e, berat_gram: sesi.sisa(e.id_entri) })).filter(e => e.berat_gram > 0),
   };
