@@ -65,6 +65,9 @@ export function filterDanUrut(list, { status = 'aktif', jenis = 'semua', urut = 
 // Detail wadah (9a/9b/9c). items = baris item_wadah milik wadah ini.
 export function detailWadah(w, items, hariIni) {
   const s = efektif(w, hariIni), ref = C.ref(), c = cl(w);
+  // Label yang sama bisa muncul di >1 baris (kondisi tiap baris berbeda) → beri nomor agar tidak membingungkan: "Apel (1)", "Apel (2)"
+  const total = {}, urut = {};
+  items.forEach(i => { total[i.nama_sampah] = (total[i.nama_sampah] || 0) + 1; });
   const p = s === 'sedang_mengisi' ? null : C.progress(w, hariIni);
   return {
     id: w.id, nama: w.nama, mode: s, resep: labelResep(w.nama_resep),
@@ -72,7 +75,9 @@ export function detailWadah(w, items, hariIni) {
     // gram = tampilan baca (selalu gram). edit = cara mengedit: 'hitungan' → stepper butir (≈ nilai × gramPerSatuan g), 'berat_langsung' → ketik gram.
     items: items.map(i => {
       const m = ref.peta.get(i.nama_sampah), hit = m?.tipe_input === 'hitungan';
-      return { id: i.id, nama: i.nama_sampah, label: m?.label_tampilan ?? i.nama_sampah,
+      const label = m?.label_tampilan ?? i.nama_sampah;
+      return { id: i.id, nama: i.nama_sampah, label, kondisi: i.kondisi_tercentang ?? [],
+        labelTampil: total[i.nama_sampah] > 1 ? `${label} (${urut[i.nama_sampah] = (urut[i.nama_sampah] || 0) + 1})` : label,
         gram: i.berat, bisaEdit: s === 'sedang_mengisi',
         edit: hit ? { tipe: 'hitungan', satuan: 'butir', nilai: Math.round(i.berat / m.berat_per_satuan), gramPerSatuan: m.berat_per_satuan }
                   : { tipe: 'berat_langsung', satuan: 'g', nilai: i.berat } };
@@ -94,8 +99,20 @@ export function detailWadah(w, items, hariIni) {
   };
 }
 
-// Centang checklist: kembalikan checklist baru (sudah_dituang sengaja tidak diubah, §7.2)
-export const toggleCentang = (w, kunci) => ({ ...cl(w), [kunci]: { ...cl(w)[kunci], tercentang: !cl(w)[kunci].tercentang } });
+// Centang checklist: kembalikan checklist baru (sudah_dituang sengaja tidak diubah, §7.2). Untuk tampilan optimistis.
+export function toggleCentang(w, kunci) {
+  const c = cl(w);
+  if (!c[kunci]) throw new Error('Bahan tidak ada di checklist. Muat ulang halaman.');
+  return { ...c, [kunci]: { ...c[kunci], tercentang: !c[kunci].tercentang } };
+}
+
+// Payload untuk api.centangChecklist: server hanya mengubah SATU kunci (jsonb_set di bawah kunci baris),
+// jadi centang dari dua perangkat pada bahan berbeda tidak saling menimpa. `checklist` = tampilan optimistis.
+export function rencanaCentang(w, kunci, hariIni) {
+  if (efektif(w, hariIni) !== 'sedang_mengisi') throw new Error('Wadah tidak menerima perubahan');
+  const checklist = toggleCentang(w, kunci);
+  return { payload: { id_wadah: w.id, kunci, tercentang: checklist[kunci].tercentang }, checklist };
+}
 
 // Dialog "Mulai Fermentasi" → bila user pilih Lanjut, kirim payload ini lewat api.mulaiFermentasi
 export function rencanaMulaiFermentasi(w, hariIni = C.hariIniWIB()) {
