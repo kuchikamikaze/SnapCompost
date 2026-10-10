@@ -1,4 +1,5 @@
 // alokasi.js — Alokasi Cerdas & Shared Pool (§2.1). Semua fungsi MURNI: tidak menulis apa pun ke Supabase.
+
 import * as C from './core.js';
 
 const statusW = w => w.status_efektif ?? w.status;
