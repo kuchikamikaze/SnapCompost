@@ -1,5 +1,4 @@
 // core.js — logika murni SnapCompost (tanpa DOM, tanpa Supabase). Spesifikasi §2–§8.
-
 export const BATAS_KONFIRMASI_GRAM = 10000;
 export const BATAS_MAKS_GRAM = 1000000;
 export const AMBANG_MIRIP = 0.45, MAKS_SARAN = 5, MIN_HURUF = 2;
@@ -12,8 +11,11 @@ let REF = null;
 export function muatReferensi(d) {
   const err = [];
   const rasioOk = v => v === null || (typeof v === 'number' && v > 0);
-  d.parameter_resep.forEach(p => ['rasio_em4', 'rasio_pelembap_tambahan', 'rasio_gula', 'rasio_air']
-    .forEach(k => { if (!rasioOk(p[k])) err.push(`${p.nama_resep}.${k} harus null atau > 0`); }));
+  d.parameter_resep.forEach(p => {['rasio_em4', 'rasio_pelembap_tambahan', 'rasio_gula', 'rasio_air']
+    .forEach(k => { if (!rasioOk(p[k])) err.push(`${p.nama_resep}.${k} harus null atau > 0`); })
+    if (p.pesan_pemantauan && p.pesan_pemantauan.length > 1000) {
+    err.push(`pesan_pemantauan untuk ${p.nama_resep} terlalu panjang (>1000 karakter). Periksa file JSON.`);
+  }});
   d.sampah_organik.forEach(s => {
     if (!KAT_SEMUA.includes(s.kategori_kompos)) err.push(`kategori "${s.kategori_kompos}" (${s.nama}) tidak dikenali Formula()`);
   });
@@ -27,7 +29,7 @@ export const ref = () => REF;
 
 // ---------- §2 Penentuan resep ----------
 export function dapatkanStatus(entri, namaResep) {
-  let status = REF.peta.get(entri.nama_sampah)['status_' + namaResep] ?? 'full';
+  let status = REF.peta.get(entri.nama_sampah)?.['status_' + namaResep] ?? 'full';
   for (const id of entri.kondisi_tercentang ?? []) {
     const k = REF.syarat_sampah.find(x => x.id === id);
     if (k?.efek_status?.[namaResep] === 'excluded') status = 'excluded'; // hanya mempersempit
@@ -50,14 +52,14 @@ export function daftarKondisiUntukLabel(nama) {
 // ---------- §4 Perlakuan (dengan override_per_resep) ----------
 export function perlakuan(nama, namaResep) {
   const s = REF.peta.get(nama);
-  const m = { ...s, ...(s.override_per_resep?.[namaResep] ?? {}) };
+  const m = { ...s, ...(s?.override_per_resep?.[namaResep] ?? {}) };
   return { instruksi: m.instruksi_perlakuan, wajib: m.wajib_perlakuan };
 }
 
 // ---------- §7.3 Input jumlah ----------
 export function konversiKeGram(nama, jumlah) {
   const s = REF.peta.get(nama);
-  return s.tipe_input === 'hitungan' ? Math.round(jumlah * s.berat_per_satuan) : jumlah;
+  return s?.tipe_input === 'hitungan' ? Math.round(jumlah * s.berat_per_satuan) : jumlah;
 }
 export function validasiInputJumlah(nama, teks, izinkanNol = false) {
   const t = String(teks).trim();
@@ -71,8 +73,10 @@ export function validasiInputJumlah(nama, teks, izinkanNol = false) {
 
 // ---------- §5 Bahan pendukung (murni, rasio semua dari JSON) ----------
 export function hitungBahanCoklat(items) {
-  // cangkang_telur punya faktor null (terpisah dari rasio) → dihitung 0
-  return Math.round(items.reduce((t, i) => t + i.berat * (REF.peta.get(i.nama_sampah).faktor_bahan_coklat ?? 0), 0));
+  return Math.round(items.reduce((t, i) => {
+    const refItem = REF.peta.get(i.nama_sampah);
+    return t + i.berat * (refItem?.faktor_bahan_coklat ?? 0);
+  }, 0));
 }
 function formula(namaResep, items, agg) {
   const p = REF.parameter_resep.find(x => x.nama_resep === namaResep);
@@ -113,7 +117,7 @@ export function hitungChecklistBaru(lama = {}, baru) {
 export const checklistLengkap = c => Object.values(c || {}).every(x => x.tercentang);
 export function teksBahan(kunci) {
   const b = REF.bahan_pendukung.find(x => x.nama === kunci);
-  return { teks: b.label_tampilan + (b.keterangan ? ` (${b.keterangan})` : ''), satuan: b.satuan };
+  return { teks: (b?.label_tampilan ?? kunci) + (b?.keterangan ? ` (${b.keterangan})` : ''), satuan: b?.satuan ?? 'g' };
 }
 
 // ---------- §8 Jadwal & progress (tanggal kalender WIB) ----------
