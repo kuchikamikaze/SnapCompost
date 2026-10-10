@@ -8,20 +8,95 @@ const KAT_SEMUA = [...KAT_S, 'mineral_terpisah'];                               
 let REF = null;
 
 // ---------- Referensi + validasi (§9.1, §12.1) ----------
+// Jadwal yang HARUS sama dengan blok CASE di mulai_fermentasi (03_patch_keamanan.sql): [durasi, interval, pemantauan aktif].
+// Server memakai angka ini; JSON yang berbeda akan ditolak saat aplikasi dimuat (cegah jadwal tampilan ≠ jadwal server).
+export const JADWAL_SERVER = { kompos: [42, 4, 35], kompos_kering: [42, 7, 35], eco_enzyme: [90, 2, 30] };
+const NILAI_STATUS = ['full', 'excluded'];
+const BAGIAN = ['sampah_organik', 'syarat_sampah', 'data_sampah', 'resep', 'parameter_resep', 'langkah_resep', 'alat_modifikasi', 'bahan_pendukung'];
+const KUNCI_PENDUKUNG = ['bahan_coklat', 'pelembap_tambahan', 'em4', 'gula', 'air']; // kunci keluaran formula()
+
 export function muatReferensi(d) {
   const err = [];
+  const hilang = BAGIAN.filter(k => !Array.isArray(d?.[k]));
+  if (hilang.length) throw new Error('Data referensi tidak valid:\nBagian hilang atau bukan array: ' + hilang.join(', '));
+
+  const namaResep = new Set(d.resep.map(r => r.nama));
   const rasioOk = v => v === null || (typeof v === 'number' && v > 0);
-  d.parameter_resep.forEach(p => {['rasio_em4', 'rasio_pelembap_tambahan', 'rasio_gula', 'rasio_air']
-    .forEach(k => { if (!rasioOk(p[k])) err.push(`${p.nama_resep}.${k} harus null atau > 0`); })
-    if (p.pesan_pemantauan && p.pesan_pemantauan.length > 1000) {
-    err.push(`pesan_pemantauan untuk ${p.nama_resep} terlalu panjang (>1000 karakter). Periksa file JSON.`);
-  }});
-  d.sampah_organik.forEach(s => {
-    if (!KAT_SEMUA.includes(s.kategori_kompos)) err.push(`kategori "${s.kategori_kompos}" (${s.nama}) tidak dikenali Formula()`);
+  const bulatPositif = v => Number.isInteger(v) && v > 0;
+  const teksAda = v => typeof v === 'string' && v.trim() !== '';
+  const unik = (arr, kunci, label) => {
+    const s = new Set();
+    arr.forEach(x => { const k = kunci(x); if (s.has(k)) err.push(`${label} ganda: ${k}`); s.add(k); });
+    return s;
+  };
+  const namaSampah = unik(d.sampah_organik, s => s.nama, 'Nama sampah');
+  const idSyarat = unik(d.syarat_sampah, k => k.id, 'ID syarat');
+
+  // ---- resep & parameter_resep
+  d.resep.forEach(r => {
+    if (d.parameter_resep.filter(p => p.nama_resep === r.nama).length !== 1) err.push(`resep "${r.nama}" harus punya tepat 1 parameter_resep`);
   });
-  d.alat_modifikasi.forEach(a => a.spesifikasi.forEach(t => {
-    if (/^\s*(\d+[.)]|[-•*])/.test(t)) err.push(`alat ${a.nama_resep}: poin tidak boleh diawali nomor/tanda poin`);
-  }));
+  d.parameter_resep.forEach(p => {
+    if (!namaResep.has(p.nama_resep)) err.push(`parameter_resep untuk resep tak dikenal: ${p.nama_resep}`);
+    ['rasio_em4', 'rasio_pelembap_tambahan', 'rasio_gula', 'rasio_air']
+      .forEach(k => { if (!rasioOk(p[k])) err.push(`${p.nama_resep}.${k} harus null atau > 0`); });
+    if (p.pesan_pemantauan && p.pesan_pemantauan.length > 1000)
+      err.push(`pesan_pemantauan untuk ${p.nama_resep} terlalu panjang (>1000 karakter). Periksa file JSON.`);
+    if (!bulatPositif(p.base_durasi_hari)) err.push(`${p.nama_resep}.base_durasi_hari harus bilangan bulat > 0`);
+    if (p.interval_pemantauan_hari !== null && !bulatPositif(p.interval_pemantauan_hari)) err.push(`${p.nama_resep}.interval_pemantauan_hari harus null atau bilangan bulat > 0`);
+    if (p.masa_curing_hari != null && !(bulatPositif(p.masa_curing_hari) && p.masa_curing_hari < p.base_durasi_hari))
+      err.push(`${p.nama_resep}.masa_curing_hari harus bilangan bulat > 0 dan < base_durasi_hari`);
+    const aktif = p.masa_curing_hari != null ? p.base_durasi_hari - p.masa_curing_hari : p.durasi_pemantauan_aktif_hari;
+    const js = JADWAL_SERVER[p.nama_resep];
+    if (!js) err.push(`resep "${p.nama_resep}" belum ada di mulai_fermentasi (SQL) / JADWAL_SERVER`);
+    else if (js[0] !== p.base_durasi_hari || js[1] !== p.interval_pemantauan_hari || js[2] !== aktif)
+      err.push(`jadwal ${p.nama_resep} di JSON [${p.base_durasi_hari}, ${p.interval_pemantauan_hari}, ${aktif}] ≠ SQL [${js}]; ubah keduanya bersamaan`);
+    if (p.nama_resep !== 'kompos' && p.nama_resep !== 'kompos_kering' && !(p.rasio_gula > 0 && p.rasio_air > 0))
+      err.push(`${p.nama_resep}: rasio_gula & rasio_air wajib > 0 (dipakai formula() resep non-kompos)`);
+  });
+
+  // ---- sampah_organik
+  d.sampah_organik.forEach(s => {
+    if (!teksAda(s.label_tampilan)) err.push(`${s.nama}: label_tampilan kosong`);
+    if (!KAT_SEMUA.includes(s.kategori_kompos)) err.push(`kategori "${s.kategori_kompos}" (${s.nama}) tidak dikenali Formula()`);
+    if (!['berat_langsung', 'hitungan'].includes(s.tipe_input)) err.push(`${s.nama}.tipe_input "${s.tipe_input}" tidak dikenal`);
+    if (s.tipe_input === 'hitungan' && !bulatPositif(s.berat_per_satuan)) err.push(`${s.nama}: tipe hitungan wajib punya berat_per_satuan bilangan bulat > 0`);
+    if (s.faktor_bahan_coklat !== null && !(Number.isFinite(s.faktor_bahan_coklat) && s.faktor_bahan_coklat >= 0))
+      err.push(`${s.nama}.faktor_bahan_coklat harus null atau angka ≥ 0`);
+    // default 'full' untuk resep tanpa field status_<resep> disengaja (spec §2); yang DITULIS harus valid & mengacu resep nyata
+    Object.keys(s).filter(k => k.startsWith('status_')).forEach(k => {
+      if (!namaResep.has(k.slice(7))) err.push(`${s.nama}.${k}: resep "${k.slice(7)}" tidak ada`);
+      if (!NILAI_STATUS.includes(s[k])) err.push(`${s.nama}.${k} = "${s[k]}" (harus ${NILAI_STATUS.join('/')})`);
+    });
+    Object.keys(s.override_per_resep ?? {}).forEach(r => { if (!namaResep.has(r)) err.push(`${s.nama}.override_per_resep: resep "${r}" tidak ada`); });
+  });
+
+  // ---- syarat_sampah & data_sampah
+  d.syarat_sampah.forEach(k => {
+    if (!k.efek_status || typeof k.efek_status !== 'object') { err.push(`syarat ${k.id}: efek_status wajib objek`); return; }
+    Object.entries(k.efek_status).forEach(([r, v]) => {
+      if (!namaResep.has(r)) err.push(`syarat ${k.id}.efek_status: resep "${r}" tidak ada`);
+      if (!NILAI_STATUS.includes(v)) err.push(`syarat ${k.id}.efek_status.${r} = "${v}" (harus ${NILAI_STATUS.join('/')})`);
+    });
+  });
+  d.data_sampah.forEach(x => {
+    if (!namaSampah.has(x.nama_sampah)) err.push(`data_sampah: sampah "${x.nama_sampah}" tidak ada`);
+    if (!idSyarat.has(x.id_kondisi)) err.push(`data_sampah: kondisi "${x.id_kondisi}" tidak ada di syarat_sampah`);
+  });
+
+  // ---- bahan_pendukung, langkah, alat
+  const namaPendukung = new Set(d.bahan_pendukung.map(b => b.nama));
+  KUNCI_PENDUKUNG.forEach(k => { if (!namaPendukung.has(k)) err.push(`bahan_pendukung "${k}" hilang (dipakai formula())`); });
+  d.bahan_pendukung.forEach(b => { if (!teksAda(b.label_tampilan)) err.push(`bahan_pendukung ${b.nama}: label_tampilan kosong`); });
+  unik(d.langkah_resep, l => `${l.nama_resep}#${l.urutan}`, 'Urutan langkah');
+  d.langkah_resep.forEach(l => { if (!namaResep.has(l.nama_resep)) err.push(`langkah_resep: resep "${l.nama_resep}" tidak ada`); });
+  d.alat_modifikasi.forEach(a => {
+    if (!namaResep.has(a.nama_resep)) err.push(`alat_modifikasi: resep "${a.nama_resep}" tidak ada`);
+    a.spesifikasi.forEach(t => {
+      if (/^\s*(\d+[.)]|[-•*])/.test(t)) err.push(`alat ${a.nama_resep}: poin tidak boleh diawali nomor/tanda poin`);
+    });
+  });
+
   if (err.length) throw new Error('Data referensi tidak valid:\n' + err.join('\n'));
   REF = { ...d, peta: new Map(d.sampah_organik.map(s => [s.nama, s])) };
 }
@@ -53,7 +128,7 @@ export function daftarKondisiUntukLabel(nama) {
     .filter(k => k.cakupan === 'universal' || khusus.includes(k.id))
     .filter(k => REF.resep.some(r =>
       dapatkanStatus({ nama_sampah: nama, kondisi_tercentang: [] }, r.nama) !== 'excluded'
-      && k.efek_status[r.nama] === 'excluded'));
+      && k.efek_status?.[r.nama] === 'excluded'));
 }
 
 // ---------- §4 Perlakuan (dengan override_per_resep) ----------
@@ -145,11 +220,14 @@ export function hitungJadwal(namaResep, mulai = hariIniWIB()) {
 }
 export const statusEfektif = (w, hariIni = hariIniWIB()) =>
   w.status === 'sedang_fermentasi' && w.tanggal_matang <= hariIni ? 'matang' : w.status;
+// Mengikuti status_efektif dari VIEW (jam SERVER) bila ada, agar bar & "hari lagi" tidak bertentangan dengan label kartu
+// walau jam HP meleset: matang → selalu 100%/0 hari; belum matang → tidak pernah 100%/0 hari.
 export function progress(w, hariIni = hariIniWIB()) {
   if (w.status === 'sedang_mengisi') return null;
   const d = w.estimasi_durasi_hari;
   if (w.status === 'sudah_dipanen') return { hariKe: d, sisaHari: 0, persen: 100 };
-  const hariKe = Math.min(Math.max(0, selisihHari(hariIni, w.tanggal_mulai_fermentasi)), d);
+  if ((w.status_efektif ?? statusEfektif(w, hariIni)) === 'matang') return { hariKe: d, sisaHari: 0, persen: 100 };
+  const hariKe = Math.min(Math.max(0, selisihHari(hariIni, w.tanggal_mulai_fermentasi)), d - 1);
   return { hariKe, sisaHari: d - hariKe, persen: Math.floor((hariKe / d) * 100) };
 }
 
