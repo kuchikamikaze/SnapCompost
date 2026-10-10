@@ -1,4 +1,4 @@
-// wadah.js — logika tampilan wadah (App §7–§9). Murni: menghasilkan data untuk di-render HTML.
+// wadah.js — logika tampilan wadah (App §7–§9). Murni: menghasilkan data untuk di-render HTML teman Anda.
 import * as C from './core.js';
 
 const efektif = (w, h) => w.status_efektif ?? C.statusEfektif(w, h); // idealnya dari VIEW wadah_status_efektif
@@ -69,8 +69,14 @@ export function detailWadah(w, items, hariIni) {
   return {
     id: w.id, nama: w.nama, mode: s, resep: labelResep(w.nama_resep),
     progressTeks: p && s !== 'sudah_dipanen' ? `hari ke-${p.hariKe} dari ${w.estimasi_durasi_hari} hari` : null,
-    items: items.map(i => ({ id: i.id, nama: i.nama_sampah, label: ref.peta.get(i.nama_sampah)?.label_tampilan ?? i.nama_sampah,
-      gram: i.berat, bisaEdit: s === 'sedang_mengisi' })),
+    // gram = tampilan baca (selalu gram). edit = cara mengedit: 'hitungan' → stepper butir (≈ nilai × gramPerSatuan g), 'berat_langsung' → ketik gram.
+    items: items.map(i => {
+      const m = ref.peta.get(i.nama_sampah), hit = m?.tipe_input === 'hitungan';
+      return { id: i.id, nama: i.nama_sampah, label: m?.label_tampilan ?? i.nama_sampah,
+        gram: i.berat, bisaEdit: s === 'sedang_mengisi',
+        edit: hit ? { tipe: 'hitungan', satuan: 'butir', nilai: Math.round(i.berat / m.berat_per_satuan), gramPerSatuan: m.berat_per_satuan }
+                  : { tipe: 'berat_langsung', satuan: 'g', nilai: i.berat } };
+    }),
     // Baris jumlah 0 disembunyikan; belum tercentang & sudah ada yang dituang → "+ sisa". Mode proses/matang: tampilkan sebagai list biasa.
     checklist: Object.entries(c).filter(([, x]) => x.jumlah > 0).map(([kunci, x]) => {
       const b = C.teksBahan(kunci), plus = !x.tercentang && (x.sudah_dituang || 0) > 0;
