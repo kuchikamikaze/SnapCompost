@@ -1,0 +1,713 @@
+{
+  "sampah_organik": [
+    {
+      "nama": "apel",
+      "label_tampilan": "Apel",
+      "kategori_kompos": "normal",
+      "faktor_bahan_coklat": 1.0,
+      "butuh_pelembap": false,
+      "status_eco_enzyme": "full",
+      "instruksi_perlakuan": null,
+      "wajib_perlakuan": false,
+      "tipe_input": "berat_langsung",
+      "berat_per_satuan": null
+    },
+    {
+      "nama": "bayam",
+      "label_tampilan": "Bayam",
+      "kategori_kompos": "normal",
+      "faktor_bahan_coklat": 1.0,
+      "butuh_pelembap": false,
+      "status_eco_enzyme": "full",
+      "instruksi_perlakuan": null,
+      "wajib_perlakuan": false,
+      "tipe_input": "berat_langsung",
+      "berat_per_satuan": null
+    },
+    {
+      "nama": "brokoli",
+      "label_tampilan": "Brokoli",
+      "kategori_kompos": "normal",
+      "faktor_bahan_coklat": 1.0,
+      "butuh_pelembap": false,
+      "status_eco_enzyme": "full",
+      "instruksi_perlakuan": "Potong-potong batangnya seukuran ruas jari (sekitar 1-2 cm).",
+      "wajib_perlakuan": false,
+      "tipe_input": "berat_langsung",
+      "berat_per_satuan": null
+    },
+    {
+      "nama": "buncis",
+      "label_tampilan": "Buncis",
+      "kategori_kompos": "normal",
+      "faktor_bahan_coklat": 1.0,
+      "butuh_pelembap": false,
+      "status_eco_enzyme": "full",
+      "instruksi_perlakuan": null,
+      "wajib_perlakuan": false,
+      "tipe_input": "berat_langsung",
+      "berat_per_satuan": null
+    },
+    {
+      "nama": "cabai",
+      "label_tampilan": "Cabai",
+      "kategori_kompos": "normal",
+      "faktor_bahan_coklat": 1.0,
+      "butuh_pelembap": false,
+      "status_eco_enzyme": "excluded",
+      "instruksi_perlakuan": null,
+      "wajib_perlakuan": false,
+      "tipe_input": "berat_langsung",
+      "berat_per_satuan": null
+    },
+    {
+      "nama": "cangkang_telur",
+      "label_tampilan": "Cangkang Telur",
+      "kategori_kompos": "mineral_terpisah",
+      "faktor_bahan_coklat": null,
+      "butuh_pelembap": false,
+      "status_eco_enzyme": "excluded",
+      "instruksi_perlakuan": "Tumbuk atau hancurkan sampai sangat halus seperti pasir.",
+      "wajib_perlakuan": true,
+      "tipe_input": "hitungan",
+      "berat_per_satuan": 6
+    },
+    {
+      "nama": "daun_bawang",
+      "label_tampilan": "Daun Bawang",
+      "kategori_kompos": "normal",
+      "faktor_bahan_coklat": 1.0,
+      "butuh_pelembap": false,
+      "status_eco_enzyme": "excluded",
+      "instruksi_perlakuan": "Cacah atau potong kecil-kecil.",
+      "wajib_perlakuan": false,
+      "tipe_input": "berat_langsung",
+      "berat_per_satuan": null
+    },
+    {
+      "nama": "jagung",
+      "label_tampilan": "Jagung",
+      "kategori_kompos": "normal",
+      "faktor_bahan_coklat": 0.5,
+      "butuh_pelembap": false,
+      "status_eco_enzyme": "excluded",
+      "instruksi_perlakuan": "Cacah bonggol atau kulit luarnya menjadi potongan kecil-kecil.",
+      "wajib_perlakuan": true,
+      "tipe_input": "berat_langsung",
+      "berat_per_satuan": null
+    },
+    {
+      "nama": "jahe",
+      "label_tampilan": "Jahe",
+      "kategori_kompos": "normal",
+      "faktor_bahan_coklat": 1.0,
+      "butuh_pelembap": false,
+      "status_eco_enzyme": "excluded",
+      "instruksi_perlakuan": "Geprek atau iris tipis-tipis.",
+      "wajib_perlakuan": false,
+      "tipe_input": "berat_langsung",
+      "berat_per_satuan": null
+    },
+    {
+      "nama": "kacang_panjang",
+      "label_tampilan": "Kacang Panjang",
+      "kategori_kompos": "normal",
+      "faktor_bahan_coklat": 1.0,
+      "butuh_pelembap": false,
+      "status_eco_enzyme": "full",
+      "instruksi_perlakuan": null,
+      "wajib_perlakuan": false,
+      "tipe_input": "berat_langsung",
+      "berat_per_satuan": null
+    },
+    {
+      "nama": "kangkung",
+      "label_tampilan": "Kangkung",
+      "kategori_kompos": "normal",
+      "faktor_bahan_coklat": 1.0,
+      "butuh_pelembap": false,
+      "status_eco_enzyme": "full",
+      "instruksi_perlakuan": null,
+      "wajib_perlakuan": false,
+      "tipe_input": "berat_langsung",
+      "berat_per_satuan": null
+    },
+    {
+      "nama": "kelengkeng",
+      "label_tampilan": "Kelengkeng",
+      "kategori_kompos": "normal",
+      "faktor_bahan_coklat": 1.0,
+      "butuh_pelembap": false,
+      "status_eco_enzyme": "full",
+      "instruksi_perlakuan": null,
+      "wajib_perlakuan": false,
+      "tipe_input": "berat_langsung",
+      "berat_per_satuan": null
+    },
+    {
+      "nama": "kembang_kol",
+      "label_tampilan": "Kembang Kol",
+      "kategori_kompos": "normal",
+      "faktor_bahan_coklat": 1.0,
+      "butuh_pelembap": false,
+      "status_eco_enzyme": "full",
+      "instruksi_perlakuan": "Potong-potong batangnya seukuran ruas jari (sekitar 1-2 cm).",
+      "wajib_perlakuan": false,
+      "tipe_input": "berat_langsung",
+      "berat_per_satuan": null
+    },
+    {
+      "nama": "kencur",
+      "label_tampilan": "Kencur",
+      "kategori_kompos": "normal",
+      "faktor_bahan_coklat": 1.0,
+      "butuh_pelembap": false,
+      "status_eco_enzyme": "excluded",
+      "instruksi_perlakuan": "Geprek atau iris tipis-tipis.",
+      "wajib_perlakuan": false,
+      "tipe_input": "berat_langsung",
+      "berat_per_satuan": null
+    },
+    {
+      "nama": "kentang",
+      "label_tampilan": "Kentang",
+      "kategori_kompos": "normal",
+      "faktor_bahan_coklat": 1.0,
+      "butuh_pelembap": false,
+      "status_eco_enzyme": "full",
+      "instruksi_perlakuan": "Kupas dan buang bagian kulit yang berwarna hijau atau yang sudah bertunas.",
+      "wajib_perlakuan": true,
+      "tipe_input": "berat_langsung",
+      "berat_per_satuan": null
+    },
+    {
+      "nama": "kubis",
+      "label_tampilan": "Kubis",
+      "kategori_kompos": "air_sedang",
+      "faktor_bahan_coklat": 1.5,
+      "butuh_pelembap": false,
+      "status_eco_enzyme": "full",
+      "instruksi_perlakuan": "Sobek atau potong-potong bagian daun luarnya.",
+      "wajib_perlakuan": false,
+      "tipe_input": "berat_langsung",
+      "berat_per_satuan": null
+    },
+    {
+      "nama": "kulit_bawang",
+      "label_tampilan": "Kulit Bawang",
+      "kategori_kompos": "kering_lambat",
+      "faktor_bahan_coklat": 0.5,
+      "butuh_pelembap": true,
+      "status_eco_enzyme": "excluded",
+      "instruksi_perlakuan": "Cacah atau potong kecil-kecil.",
+      "wajib_perlakuan": true,
+      "tipe_input": "berat_langsung",
+      "berat_per_satuan": null,
+      "override_per_resep": {
+        "kompos_kering": {
+          "butuh_pelembap": false,
+          "wajib_perlakuan": false
+        }
+      }
+    },
+    {
+      "nama": "kulit_jeruk",
+      "label_tampilan": "Kulit Jeruk",
+      "kategori_kompos": "normal",
+      "faktor_bahan_coklat": 1.0,
+      "butuh_pelembap": false,
+      "status_eco_enzyme": "full",
+      "instruksi_perlakuan": "Cacah atau potong kecil-kecil.",
+      "wajib_perlakuan": false,
+      "tipe_input": "berat_langsung",
+      "berat_per_satuan": null
+    },
+    {
+      "nama": "kulit_lemon",
+      "label_tampilan": "Kulit Lemon",
+      "kategori_kompos": "normal",
+      "faktor_bahan_coklat": 1.0,
+      "butuh_pelembap": false,
+      "status_eco_enzyme": "full",
+      "instruksi_perlakuan": "Cacah atau potong kecil-kecil.",
+      "wajib_perlakuan": false,
+      "tipe_input": "berat_langsung",
+      "berat_per_satuan": null
+    },
+    {
+      "nama": "kulit_mangga",
+      "label_tampilan": "Kulit Mangga",
+      "kategori_kompos": "normal",
+      "faktor_bahan_coklat": 1.0,
+      "butuh_pelembap": false,
+      "status_eco_enzyme": "full",
+      "instruksi_perlakuan": null,
+      "wajib_perlakuan": false,
+      "tipe_input": "berat_langsung",
+      "berat_per_satuan": null
+    },
+    {
+      "nama": "kulit_melon",
+      "label_tampilan": "Kulit Melon",
+      "kategori_kompos": "air_sedang",
+      "faktor_bahan_coklat": 1.5,
+      "butuh_pelembap": false,
+      "status_eco_enzyme": "full",
+      "instruksi_perlakuan": null,
+      "wajib_perlakuan": false,
+      "tipe_input": "berat_langsung",
+      "berat_per_satuan": null
+    },
+    {
+      "nama": "kulit_pepaya",
+      "label_tampilan": "Kulit Pepaya",
+      "kategori_kompos": "normal",
+      "faktor_bahan_coklat": 1.0,
+      "butuh_pelembap": false,
+      "status_eco_enzyme": "full",
+      "instruksi_perlakuan": null,
+      "wajib_perlakuan": false,
+      "tipe_input": "berat_langsung",
+      "berat_per_satuan": null
+    },
+    {
+      "nama": "kulit_pisang",
+      "label_tampilan": "Kulit Pisang",
+      "kategori_kompos": "normal",
+      "faktor_bahan_coklat": 1.0,
+      "butuh_pelembap": false,
+      "status_eco_enzyme": "full",
+      "instruksi_perlakuan": "Cacah atau potong kecil-kecil.",
+      "wajib_perlakuan": false,
+      "tipe_input": "berat_langsung",
+      "berat_per_satuan": null
+    },
+    {
+      "nama": "kulit_rambutan",
+      "label_tampilan": "Kulit Rambutan",
+      "kategori_kompos": "normal",
+      "faktor_bahan_coklat": 1.0,
+      "butuh_pelembap": false,
+      "status_eco_enzyme": "full",
+      "instruksi_perlakuan": null,
+      "wajib_perlakuan": false,
+      "tipe_input": "berat_langsung",
+      "berat_per_satuan": null
+    },
+    {
+      "nama": "kulit_semangka",
+      "label_tampilan": "Kulit Semangka",
+      "kategori_kompos": "air_sedang",
+      "faktor_bahan_coklat": 1.5,
+      "butuh_pelembap": false,
+      "status_eco_enzyme": "full",
+      "instruksi_perlakuan": "Cacah atau potong kecil-kecil.",
+      "wajib_perlakuan": false,
+      "tipe_input": "berat_langsung",
+      "berat_per_satuan": null
+    },
+    {
+      "nama": "kunyit",
+      "label_tampilan": "Kunyit",
+      "kategori_kompos": "normal",
+      "faktor_bahan_coklat": 1.0,
+      "butuh_pelembap": false,
+      "status_eco_enzyme": "excluded",
+      "instruksi_perlakuan": "Geprek atau iris tipis-tipis.",
+      "wajib_perlakuan": false,
+      "tipe_input": "berat_langsung",
+      "berat_per_satuan": null
+    },
+    {
+      "nama": "lengkuas",
+      "label_tampilan": "Lengkuas",
+      "kategori_kompos": "normal",
+      "faktor_bahan_coklat": 1.0,
+      "butuh_pelembap": false,
+      "status_eco_enzyme": "excluded",
+      "instruksi_perlakuan": "Cacah halus atau potong kecil-kecil.",
+      "wajib_perlakuan": true,
+      "tipe_input": "berat_langsung",
+      "berat_per_satuan": null
+    },
+    {
+      "nama": "nanas",
+      "label_tampilan": "Nanas",
+      "kategori_kompos": "normal",
+      "faktor_bahan_coklat": 1.0,
+      "butuh_pelembap": false,
+      "status_eco_enzyme": "full",
+      "instruksi_perlakuan": "Potong kecil-kecil bagian bonggolnya yang keras.",
+      "wajib_perlakuan": false,
+      "tipe_input": "berat_langsung",
+      "berat_per_satuan": null
+    },
+    {
+      "nama": "nasi_putih",
+      "label_tampilan": "Sisa Nasi Putih",
+      "kategori_kompos": "pati",
+      "faktor_bahan_coklat": 1.2,
+      "butuh_pelembap": false,
+      "status_eco_enzyme": "excluded",
+      "instruksi_perlakuan": "Pastikan sisa nasi putih tidak menggumpal.",
+      "wajib_perlakuan": true,
+      "tipe_input": "berat_langsung",
+      "berat_per_satuan": null
+    },
+    {
+      "nama": "paprika",
+      "label_tampilan": "Paprika",
+      "kategori_kompos": "normal",
+      "faktor_bahan_coklat": 1.0,
+      "butuh_pelembap": false,
+      "status_eco_enzyme": "full",
+      "instruksi_perlakuan": null,
+      "wajib_perlakuan": false,
+      "tipe_input": "berat_langsung",
+      "berat_per_satuan": null
+    },
+    {
+      "nama": "sawi-pakcoy",
+      "label_tampilan": "Sawi-Pakcoy",
+      "kategori_kompos": "normal",
+      "faktor_bahan_coklat": 1.0,
+      "butuh_pelembap": false,
+      "status_eco_enzyme": "full",
+      "instruksi_perlakuan": null,
+      "wajib_perlakuan": false,
+      "tipe_input": "berat_langsung",
+      "berat_per_satuan": null
+    },
+    {
+      "nama": "seledri",
+      "label_tampilan": "Seledri",
+      "kategori_kompos": "normal",
+      "faktor_bahan_coklat": 1.0,
+      "butuh_pelembap": false,
+      "status_eco_enzyme": "full",
+      "instruksi_perlakuan": null,
+      "wajib_perlakuan": false,
+      "tipe_input": "berat_langsung",
+      "berat_per_satuan": null
+    },
+    {
+      "nama": "stroberi",
+      "label_tampilan": "Stroberi",
+      "kategori_kompos": "normal",
+      "faktor_bahan_coklat": 1.0,
+      "butuh_pelembap": false,
+      "status_eco_enzyme": "full",
+      "instruksi_perlakuan": null,
+      "wajib_perlakuan": false,
+      "tipe_input": "berat_langsung",
+      "berat_per_satuan": null
+    },
+    {
+      "nama": "terong",
+      "label_tampilan": "Terong",
+      "kategori_kompos": "normal",
+      "faktor_bahan_coklat": 1.0,
+      "butuh_pelembap": false,
+      "status_eco_enzyme": "full",
+      "instruksi_perlakuan": null,
+      "wajib_perlakuan": false,
+      "tipe_input": "berat_langsung",
+      "berat_per_satuan": null
+    },
+    {
+      "nama": "timun",
+      "label_tampilan": "Timun",
+      "kategori_kompos": "air_ekstrem",
+      "faktor_bahan_coklat": 2.0,
+      "butuh_pelembap": false,
+      "status_eco_enzyme": "full",
+      "instruksi_perlakuan": "Cacah atau potong kecil-kecil.",
+      "wajib_perlakuan": false,
+      "tipe_input": "berat_langsung",
+      "berat_per_satuan": null
+    },
+    {
+      "nama": "tomat",
+      "label_tampilan": "Tomat",
+      "kategori_kompos": "air_ekstrem",
+      "faktor_bahan_coklat": 2.0,
+      "butuh_pelembap": false,
+      "status_eco_enzyme": "full",
+      "instruksi_perlakuan": "Cacah atau potong kecil-kecil.",
+      "wajib_perlakuan": true,
+      "tipe_input": "berat_langsung",
+      "berat_per_satuan": null
+    },
+    {
+      "nama": "wortel",
+      "label_tampilan": "Wortel",
+      "kategori_kompos": "normal",
+      "faktor_bahan_coklat": 1.0,
+      "butuh_pelembap": false,
+      "status_eco_enzyme": "full",
+      "instruksi_perlakuan": null,
+      "wajib_perlakuan": false,
+      "tipe_input": "berat_langsung",
+      "berat_per_satuan": null
+    }
+  ],
+  "syarat_sampah": [
+    {
+      "id": "berjamur",
+      "label_tampilan": "Kondisinya sudah berjamur atau berbulu (warna putih, hijau, hitam, dll)",
+      "cakupan": "universal",
+      "efek_status": {
+        "kompos": "full",
+        "kompos_kering": "full",
+        "eco_enzyme": "excluded"
+      }
+    },
+    {
+      "id": "berlendir",
+      "label_tampilan": "Kondisinya sudah mulai berlendir atau berair",
+      "cakupan": "khusus",
+      "efek_status": {
+        "kompos": "full",
+        "kompos_kering": "full",
+        "eco_enzyme": "excluded"
+      }
+    },
+    {
+      "id": "kuntum_menguning",
+      "label_tampilan": "Bagian bunganya sudah layu menguning dan berlendir",
+      "cakupan": "khusus",
+      "efek_status": {
+        "kompos": "full",
+        "kompos_kering": "full",
+        "eco_enzyme": "excluded"
+      }
+    }
+  ],
+  "data_sampah": [
+    {
+      "nama_sampah": "bayam",
+      "id_kondisi": "berlendir"
+    },
+    {
+      "nama_sampah": "kangkung",
+      "id_kondisi": "berlendir"
+    },
+    {
+      "nama_sampah": "brokoli",
+      "id_kondisi": "kuntum_menguning"
+    },
+    {
+      "nama_sampah": "kembang_kol",
+      "id_kondisi": "kuntum_menguning"
+    }
+  ],
+  "resep": [
+    {
+      "nama": "kompos",
+      "label_tampilan": "Kompos basah",
+      "tipe": "padat"
+    },
+    {
+      "nama": "kompos_kering",
+      "label_tampilan": "Kompos Kering",
+      "tipe": "padat"
+    },
+    {
+      "nama": "eco_enzyme",
+      "label_tampilan": "Eco-Enzyme",
+      "tipe": "cair"
+    }
+  ],
+  "parameter_resep": [
+    {
+      "nama_resep": "kompos",
+      "rasio_gula": null,
+      "rasio_air": null,
+      "rasio_em4": 0.01,
+      "rasio_pelembap_tambahan": 0.2,
+      "base_durasi_hari": 42,
+      "interval_pemantauan_hari": 4,
+      "durasi_pemantauan_aktif_hari": null,
+      "masa_curing_hari": 7,
+      "pesan_pemantauan": "Waktunya aduk kompos supaya udaranya lancar dan tidak berbau."
+    },
+    {
+      "nama_resep": "kompos_kering",
+      "rasio_gula": null,
+      "rasio_air": null,
+      "rasio_em4": null,
+      "rasio_pelembap_tambahan": null,
+      "base_durasi_hari": 42,
+      "interval_pemantauan_hari": 7,
+      "durasi_pemantauan_aktif_hari": null,
+      "masa_curing_hari": 7,
+      "pesan_pemantauan": "Jika saat diaduk terasa terlalu basah atau becek maka kompos perlu dijemur, dengan ketentuan: keluarkan komposnya, aduk dan sebarkan kompos secara merata di permukaan, dan tunggu hingga kompos terlihat seperti tanah yang semalam terkena hujan (tidak basah tetapi agak lembap)."
+    },
+    {
+      "nama_resep": "eco_enzyme",
+      "rasio_gula": 0.3333333,
+      "rasio_air": 3.3333333,
+      "rasio_em4": null,
+      "rasio_pelembap_tambahan": null,
+      "base_durasi_hari": 90,
+      "interval_pemantauan_hari": 2,
+      "durasi_pemantauan_aktif_hari": 30,
+      "masa_curing_hari": null,
+      "pesan_pemantauan": "Waktunya buka tutup wadah sebentar untuk melepas gas hasil fermentasi!"
+    }
+  ],
+  "langkah_resep": [
+    {
+      "nama_resep": "kompos",
+      "urutan": 1,
+      "detail_langkah": "Siapkan wadah yang sudah dimodifikasi sesuai daftar alat yang perlu dimodifikasi di halaman ini."
+    },
+    {
+      "nama_resep": "kompos",
+      "urutan": 2,
+      "detail_langkah": "Masukkan sampah organik dan bahan pendukung lainnya ke wadah. Susun berlapis-lapis selang-seling dengan bahan pendukung kering sesuai takaran aplikasi."
+    },
+    {
+      "nama_resep": "kompos",
+      "urutan": 3,
+      "detail_langkah": "Simpan wadah di tempat yang teduh (tidak terkena sinar matahari langsung dan tidak terkena hujan), bersuhu ruang, bersirkulasi udara baik, dan diletakkan di atas permukaan yang datar serta stabil."
+    },
+    {
+      "nama_resep": "kompos",
+      "urutan": 4,
+      "detail_langkah": "Aduk tumpukan kompos setiap 4 hari sekali supaya udaranya lancar dan kompos tidak berbau busuk."
+    },
+    {
+      "nama_resep": "kompos",
+      "urutan": 5,
+      "detail_langkah": "Menjelang 7 hari terakhir sebelum jadwal matang, notifikasi pengingat untuk mengaduk tumpukan kompos akan berhenti dengan sendirinya. Ini menandai dimulainya masa curing: JANGAN aduk sama sekali selama periode ini, biarkan kompos beristirahat agar proses pematangan berjalan sempurna."
+    },
+    {
+      "nama_resep": "kompos",
+      "urutan": 6,
+      "detail_langkah": "Selesai! Tunggu sampai waktu panen tiba. Kompos yang matang akan berwarna kehitaman, gembur, dan baunya segar seperti tanah sehabis hujan."
+    },
+    {
+      "nama_resep": "kompos_kering",
+      "urutan": 1,
+      "detail_langkah": "Siapkan wadah yang sudah dimodifikasi sesuai daftar alat yang perlu dimodifikasi di halaman ini."
+    },
+    {
+      "nama_resep": "kompos_kering",
+      "urutan": 2,
+      "detail_langkah": "Masukkan sampah organik dan bahan pendukung lainnya ke wadah. Susun berlapis-lapis selang-seling dengan bahan pendukung kering sesuai takaran aplikasi."
+    },
+    {
+      "nama_resep": "kompos_kering",
+      "urutan": 3,
+      "detail_langkah": "Simpan wadah di tempat yang teduh (tidak terkena sinar matahari langsung dan tidak terkena hujan), bersuhu ruang, bersirkulasi udara baik, dan diletakkan di atas permukaan yang datar serta stabil."
+    },
+    {
+      "nama_resep": "kompos_kering",
+      "urutan": 4,
+      "detail_langkah": "Aduk tumpukan kompos setiap 7 hari sekali agar udara masuk. Jika saat diaduk terasa terlalu basah atau becek maka kompos perlu dijemur, dengan ketentuan: keluarkan komposnya, aduk dan sebarkan kompos secara merata, dan tunggu hingga kompos terlihat seperti tanah yang semalam terkena hujan (tidak basah tetapi agak lembap)."
+    },
+    {
+      "nama_resep": "kompos_kering",
+      "urutan": 5,
+      "detail_langkah": "Menjelang 7 hari terakhir sebelum jadwal matang, notifikasi pengingat untuk mengaduk tumpukan kompos akan berhenti dengan sendirinya. Ini menandai dimulainya masa curing: JANGAN aduk atau buka wadah sama sekali selama periode ini, biarkan kompos beristirahat agar proses pematangan berjalan sempurna."
+    },
+    {
+      "nama_resep": "kompos_kering",
+      "urutan": 6,
+      "detail_langkah": "Selesai! Tunggu sampai waktu panen tiba. Kompos yang matang akan menjadi gembur."
+    },
+    {
+      "nama_resep": "eco_enzyme",
+      "urutan": 1,
+      "detail_langkah": "Siapkan wadah yang sudah dimodifikasi sesuai daftar alat yang perlu dimodifikasi di halaman ini."
+    },
+    {
+      "nama_resep": "eco_enzyme",
+      "urutan": 2,
+      "detail_langkah": "Potong kecil-kecil sampah organik agar proses fermentasi berjalan maksimal."
+    },
+    {
+      "nama_resep": "eco_enzyme",
+      "urutan": 3,
+      "detail_langkah": "Larutkan gula ke dalam air terlebih dahulu hingga merata, lalu masukkan larutan tersebut ke dalam wadah bersama potongan sampah organik sesuai takaran resep."
+    },
+    {
+      "nama_resep": "eco_enzyme",
+      "urutan": 4,
+      "detail_langkah": "Simpan wadah di tempat yang teduh dan bersuhu stabil (hindari panas ekstrem agar tekanan gas aman), diletakkan di permukaan datar, serta jauh dari jangkauan anak-anak atau hewan peliharaan."
+    },
+    {
+      "nama_resep": "eco_enzyme",
+      "urutan": 5,
+      "detail_langkah": "Khusus di bulan pertama, buka tutup wadahnya sebentar setiap dua hari sekali untuk membuang gas, lalu tutup rapat kembali."
+    },
+    {
+      "nama_resep": "eco_enzyme",
+      "urutan": 6,
+      "detail_langkah": "Selesai! Tunggu sampai waktu panen tiba. Nanti, cukup saring cairannya dan Eco-Enzyme siap digunakan."
+    }
+  ],
+  "alat_modifikasi": [
+    {
+      "nama_resep": "kompos",
+      "nama_komponen": "Ember/tong plastik",
+      "spesifikasi": [
+        "Gunakan tutup yang tidak terlalu rapat.",
+        "Buat lubang udara sebesar ujung jari (1-1,5 cm) di sekeliling dinding ember dengan jarak sekepalan tangan (8-10 cm).",
+        "Buat lubang-lubang kecil di bagian dasar ember agar air lindi bisa menetes keluar.",
+        "Letakkan wadah penampung (nampan, baskom, atau ember lain) di bawah ember utama untuk menampung lindi yang menetes.",
+        "Ganjal ember utama dengan batu bata, kayu, atau benda lainnya setinggi minimal 5-10 cm dari wadah penampung, supaya lindi yang tertampung tidak menyentuh dasar ember dan tidak mengalir balik (backflow) ke kompos."
+      ]
+    },
+    {
+      "nama_resep": "kompos_kering",
+      "nama_komponen": "Ember/tong plastik",
+      "spesifikasi": [
+        "Gunakan tutup yang tidak terlalu rapat.",
+        "Buat lubang udara sebesar ujung jari (1-1,5 cm) di sekeliling dinding ember dengan jarak sekepalan tangan (8-10 cm).",
+        "PASTIKAN TIDAK ADA lubang di bagian dasar atau bawah ember sama sekali."
+      ]
+    },
+    {
+      "nama_resep": "eco_enzyme",
+      "nama_komponen": "Botol plastik/wadah yang bisa ditutup rapat",
+      "spesifikasi": [
+        "Pastikan wadahnya memiliki penutup yang bisa ditutup rapat.",
+        "Jangan diisi sampai penuh: sisakan ruang kosong di bagian atas setidaknya sepertiga dari total tinggi wadah, sebagai ruang aman untuk gas hasil fermentasi."
+      ]
+    }
+  ],
+  "bahan_pendukung": [
+    {
+      "nama": "bahan_coklat",
+      "label_tampilan": "Bahan Coklat/Kering",
+      "keterangan": "Daun kering, sekam, atau sobekan kardus",
+      "satuan": "g"
+    },
+    {
+      "nama": "em4",
+      "label_tampilan": "Larutan EM4",
+      "keterangan": null,
+      "satuan": "ml"
+    },
+    {
+      "nama": "pelembap_tambahan",
+      "label_tampilan": "Pelembap Tambahan",
+      "keterangan": "Air cucian beras, lindi, atau air biasa",
+      "satuan": "ml"
+    },
+    {
+      "nama": "gula",
+      "label_tampilan": "Gula",
+      "keterangan": "Gula merah, molase, atau gula pasir",
+      "satuan": "g"
+    },
+    {
+      "nama": "air",
+      "label_tampilan": "Air",
+      "keterangan": null,
+      "satuan": "ml"
+    }
+  ]
+}
