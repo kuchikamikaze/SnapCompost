@@ -1,16 +1,41 @@
 {
+  "id": "/",
   "name": "SnapCompost",
   "short_name": "SnapCompost",
-  "description": "Kelola wadah kompos/eco enzyme dan pemantauan fermentasi",
+  "description": "Kelola wadah kompos/eco enzyme dan pemantauan fermentasi dengan deteksi sampah berbasis AI",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait",
   "background_color": "#f8fbf7",
   "theme_color": "#f8fbf7",
   "lang": "id",
+  "dir": "ltr",
+  "categories": ["lifestyle", "productivity", "education"],
+  "prefer_related_applications": false,
   "icons": [
-    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
     { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
-  ]
+  ],
+  "shortcuts": [
+    {
+      "name": "Scan Sampah",
+      "short_name": "Scan",
+      "description": "Buka kamera untuk deteksi sampah",
+      "url": "/?buka=kamera",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Wadah Saya",
+      "short_name": "Wadah",
+      "description": "Lihat daftar wadah kompos/eco enzyme",
+      "url": "/?buka=wadah",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ],
+  "launch_handler": {
+    "client_mode": ["navigate-existing", "auto"]
+  }
 }
