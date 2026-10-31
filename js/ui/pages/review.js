@@ -149,7 +149,7 @@ function renderPerlakuan(keAtas = false) {
   const wajib = Boolean(b.perlakuan.wajib);
   judulHeader().textContent = "Sebelum Lanjut...";
 
-  const art = el("div", "review-treat-art", IKON);
+  const art = el("div", "review-treat-art", ikonSampah(b.nama));
   art.setAttribute("aria-hidden", "true");
   const judul = el("h3", "review-treat-title", wajib ? `Siapkan ${b.label_tampilan} dulu ya!` : `${b.label_tampilan} bisa dipakai!`);
 
