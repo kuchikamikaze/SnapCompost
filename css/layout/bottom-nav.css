@@ -7,10 +7,11 @@
   bottom: 0;
   left: 0;
   display: grid;
-  height: 75px;
+  height: 69px;
   grid-template-columns: 1fr 1fr 1fr;
-  align-items: end;
-  padding: 0 22px 12px;
+  grid-template-rows: 100%;
+  align-items: center;
+  padding: 0 22px;
   border-top: 1px solid #edf1ee;
   background: rgb(255 255 255 / 97%);
 }
@@ -19,20 +20,22 @@
   display: flex;
   align-items: center;
   flex-direction: column;
-  justify-content: flex-end;
+  justify-content: center;
   gap: 3px;
   min-height: 44px;
   padding: 0;
   border: 0;
   background: transparent;
   color: #71877a;
-  font-size: 9px;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 14px;
   cursor: pointer;
 }
 
 .nav-item svg {
-  width: 21px;
-  height: 21px;
+  width: 24px;
+  height: 24px;
 }
 
 .nav-item.active {
@@ -45,16 +48,18 @@
 }
 
 .nav-item.camera {
-  justify-content: center;
+  align-self: stretch;
+  justify-content: flex-end;
   gap: 2px;
-  padding-top: 2px;
+  min-height: 0;
+  padding: 0 0 18px;
 }
 
 .camera-button {
   display: grid;
-  width: 44px;
-  height: 44px;
-  margin-top: -20px;
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
   place-items: center;
   border: 3px solid white;
   border-radius: 50%;
@@ -64,23 +69,11 @@
 }
 
 .camera-button svg {
-  width: 19px;
-  height: 19px;
+  width: 22px;
+  height: 22px;
 }
 
 .camera-label {
-  font-size: 9px;
-}
-
-.home-indicator {
-  position: absolute;
-  z-index: 6;
-  bottom: 4px;
-  left: 50%;
-  width: 108px;
-  height: 4px;
-  transform: translateX(-50%);
-  border-radius: 4px;
-  background: #a9aea9;
-  pointer-events: none;
+  flex-shrink: 0;
+  font-size: 10px;
 }

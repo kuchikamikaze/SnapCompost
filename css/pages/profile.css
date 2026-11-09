@@ -1,7 +1,7 @@
 /* Halaman Profil Anda. Header & tombol back memakai kelas .workflow-header / .workflow-back agar senada dengan halaman lain. */
 
 /* Saat Profil terbuka, semua anak .phone lain disembunyikan (cara yang sama dengan layar login). */
-.phone[data-screen="profil"] > :not(.profile-view):not(.confirm-layer):not(.loading-layer):not(.toast):not(.home-indicator) {
+.phone[data-screen="profil"] > :not(.profile-view):not(.confirm-layer):not(.loading-layer):not(.toast) {
   display: none !important;
 }
 
@@ -94,7 +94,7 @@
 }
 
 .profile-actions {
-  padding: 12px 19px 34px;  /* ruang untuk home-indicator */
+  padding: 12px 19px 34px;  /* ruang bawah */
 }
 
 .profile-logout {

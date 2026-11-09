@@ -81,13 +81,8 @@
     transform: none;
   }
 
-  .home-indicator {
-    position: absolute;
-  }
-
   /* Keyboard terbuka: nav-bar disembunyikan supaya tidak menutupi layar */
-  .phone.keyboard-open .bottom-nav,
-  .phone.keyboard-open .home-indicator {
+  .phone.keyboard-open .bottom-nav {
     display: none;
   }
 
