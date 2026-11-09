@@ -83,18 +83,22 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 2px 1px 10px;
+  gap: 10px;
+  margin: 8px 2px 12px;
   color: #66766a;
-  font-size: 9px;
+  font-size: 12px;
+  line-height: 17px;
 }
 
 .confirm-intro button {
   padding: 0;
   border: 0;
   background: transparent;
+  flex-shrink: 0;
   color: #2d8054;
-  font-size: 8px;
-  font-weight: 650;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
   cursor: pointer;
 }
 
@@ -161,12 +165,14 @@
   .detection-spinner { animation-duration: 2.4s; }
 }
 
-/* ---- Header layar Hasil Deteksi: disamakan dengan Cek Kondisi ---- */
-.workflow-screen[data-workflow-screen="results"] {
+/* ---- Header layar Hasil Deteksi & Konfirmasi Sampah: disamakan dengan Cek Kondisi ---- */
+.workflow-screen[data-workflow-screen="results"],
+.workflow-screen[data-workflow-screen="confirm"] {
   --results-gutter: 20px;
 }
 
-[data-workflow-screen="results"] .workflow-header {
+[data-workflow-screen="results"] .workflow-header,
+[data-workflow-screen="confirm"] .workflow-header {
   min-height: 56px;
   flex-basis: 56px;
   padding: 0 var(--results-gutter);
@@ -174,17 +180,93 @@
   background: rgba(255, 255, 255, .9);
 }
 
-[data-workflow-screen="results"] .workflow-header h2 {
+[data-workflow-screen="results"] .workflow-header h2,
+[data-workflow-screen="confirm"] .workflow-header h2 {
   font-size: 18px;
 }
 
-[data-workflow-screen="results"] .workflow-back {
+[data-workflow-screen="results"] .workflow-back,
+[data-workflow-screen="confirm"] .workflow-back {
   width: 38px;
   height: 38px;
   flex-basis: 38px;
 }
 
-[data-workflow-screen="results"] .workflow-back svg {
+[data-workflow-screen="results"] .workflow-back svg,
+[data-workflow-screen="confirm"] .workflow-back svg {
   width: 20px;
   height: 20px;
+}
+
+/* ---- Tombol bawah Konfirmasi Sampah: ukuran sama dengan layar Isi Manual ---- */
+[data-workflow-screen="confirm"] .workflow-content {
+  padding-bottom: 0;
+}
+
+[data-workflow-screen="confirm"] .workflow-content .workflow-actions {
+  gap: 10px;
+  padding: 12px 0 calc(16px + env(safe-area-inset-bottom, 0px));
+}
+
+[data-workflow-screen="confirm"] .workflow-actions .workflow-primary,
+[data-workflow-screen="confirm"] .workflow-actions .workflow-secondary {
+  width: 100%;
+  min-height: 52px;
+  padding: 0 16px;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+/* ---- Hasil Deteksi: teks pengantar lebih besar, tombol bawah sama dengan layar Isi Manual ---- */
+[data-workflow-screen="results"] .workflow-summary {
+  margin: 8px 2px 12px;
+  font-size: 12px;
+  line-height: 17px;
+}
+
+[data-workflow-screen="results"] .workflow-content {
+  padding-bottom: 0;
+}
+
+[data-workflow-screen="results"] .workflow-content .workflow-actions {
+  gap: 10px;
+  padding: 12px 0 calc(16px + env(safe-area-inset-bottom, 0px));
+}
+
+[data-workflow-screen="results"] .workflow-actions .workflow-primary,
+[data-workflow-screen="results"] .workflow-actions .workflow-secondary {
+  width: 100%;
+  min-height: 52px;
+  padding: 0 16px;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+/* ---- Konfirmasi Sampah: nama sampah & keterangan keyakinan lebih besar ---- */
+.confirm-card .waste-name {
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.confirm-card .notification-description {
+  display: block;
+  margin-top: 2px;
+  font-size: 11px;
+  line-height: 15px;
+}
+
+/* ---- Hasil Deteksi: nama sampah & persentase keyakinan lebih besar ---- */
+.detection-card .waste-name {
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.detection-card .waste-percent {
+  min-width: 34px;
+  margin-left: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: right;
 }
