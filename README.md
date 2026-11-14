@@ -1,93 +1,321 @@
 # SnapCompost
 
-SnapCompost adalah prototipe aplikasi untuk membantu pengguna mengelola wadah kompos, memeriksa perkembangan proses, dan mengikuti alur pengolahan sampah organik.
+SnapCompost adalah aplikasi pengelolaan kompos rumah tangga yang membantu pengguna mengenali sampah organik, menentukan perlakuan yang sesuai, mengalokasikan bahan ke wadah kompos, memantau fermentasi, dan menerima pengingat perawatan.
 
-## Cara menjalankan
+Aplikasi ini dikembangkan sebagai Progressive Web App (PWA), menggunakan JavaScript modular, Vite, Supabase, Firebase Cloud Messaging, serta ONNX Runtime Web untuk deteksi gambar di perangkat pengguna.
 
-Jalankan server lokal dari folder proyek:
+## Fitur utama
 
-```bash
-python -m http.server 8000
-```
+- Deteksi sampah organik dari foto menggunakan model ONNX.
+- Input bahan secara manual apabila deteksi tidak tersedia atau hasilnya kurang sesuai.
+- Rekomendasi resep dan perlakuan berdasarkan data referensi SnapCompost.
+- Perhitungan kebutuhan bahan cokelat dan bahan pendukung.
+- Pengelolaan beberapa wadah kompos.
+- Checklist persiapan sebelum fermentasi.
+- Pemantauan status, jadwal, dan progres fermentasi.
+- Pusat notifikasi dan dukungan push notification.
+- Autentikasi pengguna dan penyimpanan data melalui Supabase.
+- Dukungan instalasi sebagai PWA pada perangkat yang kompatibel.
 
-Buka `http://localhost:8000/Dasboard.html` di browser. Server lokal diperlukan agar modul JavaScript dan berkas data/model dapat dimuat.
+## Teknologi
 
-## Struktur dan fungsi file
+| Bagian | Teknologi |
+|---|---|
+| Frontend | HTML, CSS, JavaScript ES Modules |
+| Build tool | Vite |
+| Database dan autentikasi | Supabase |
+| Push notification | Firebase Cloud Messaging |
+| Deteksi gambar | ONNX Runtime Web |
+| PWA | Web App Manifest dan Service Worker |
+| Deployment | Vercel |
 
-### Antarmuka
-
-- **`Dasboard.html`** — halaman utama, berisi HTML, CSS, dan JavaScript antarmuka. Menampilkan beranda, daftar/detail wadah, notifikasi, serta alur kamera dan input manual. Prototipe UI ini menyimpan wadah lokal di `localStorage`.
-
-### Modul JavaScript
-
-- **`js/core.js`** — aturan inti pengolahan kompos dan pemindaian.
-  - Memuat dan memvalidasi referensi melalui `muatReferensi`, lalu menyediakan akses data melalui `ref` dan `dataSampah`.
-  - Menentukan kecocokan bahan dan resep melalui `dapatkanStatus`, `penentuanResep`, `daftarKondisiUntukLabel`, dan `perlakuan`.
-  - Memvalidasi jumlah dan menghitung kebutuhan bahan melalui `konversiKeGram`, `validasiInputJumlah`, `hitungBahanCoklat`, dan `hitungBahanPendukung`. Checklist memakai `sudahDituang`, `sisaDituang`, `hitungChecklistBaru`, `checklistLengkap`, dan `teksBahan`.
-  - Menghitung tanggal, status, dan kemajuan fermentasi melalui `hariIniWIB`, `selisihHari`, `tambahHari`, `hitungJadwal`, `jadwalMenyimpang`, `statusEfektif`, dan `progress`.
-  - Memberi saran nama sampah melalui `cariSaran`. `buatSesiScan` mengelola kandidat hasil deteksi, pilihan pengguna, dan input manual.
-  - Menjadi dependensi aturan bagi `wadah.js`, `alokasi.js`, dan `notifikasi.js`.
-
-- **`js/wadah.js`** — mengubah data wadah menjadi informasi yang siap ditampilkan dan menyiapkan rencana tindakan.
-  - `dashboard`, `kartuWadah`, `teksKanan`, `teksTotalSampah`, dan `teksTotalKg` membentuk ringkasan serta label wadah.
-  - `daftarHomepage` dan `filterDanUrut` memilih, menyaring, serta mengurutkan wadah.
-  - `detailWadah` menyusun data detail, item, checklist, langkah, dan tombol yang sesuai dengan status wadah.
-  - `rencanaCentang`, `rencanaMulaiFermentasi`, `rencanaHapusItem`, dan `rencanaUbahJumlah` memvalidasi tindakan dan membentuk payload untuk API.
-  - Mengimpor aturan dari `core.js`; hasilnya dapat digunakan UI atau lapisan `integrasi.js`.
-
-- **`js/alokasi.js`** — mengatur pembagian bahan baru ke wadah yang tersedia.
-  - `kandidatWadah` dan `buatSesiAlokasi` menentukan wadah tujuan serta melacak jumlah yang dialokasikan.
-  - `rencanaTambahKeWadah` dan `rencanaWadahBaru` menghitung item dan checklist untuk wadah.
-  - `susunRencana` dan `payloadKonfirmasi` membentuk serta memvalidasi rencana lengkap.
-  - `kirimAlokasi` mengirim konfirmasi melalui API dan menjaga agar pengulangan setelah gangguan jaringan tidak menggandakan transaksi; `batalkanPending` membuang percobaan yang belum pasti setelah data dimuat ulang.
-  - Menggunakan aturan dari `core.js`; `kirimAlokasi` memanggil `konfirmasiAlokasi` dari `api.js`.
-
-- **`js/api.js`** — satu-satunya modul yang berkomunikasi dengan Supabase. `buatApi(klien)` menghasilkan operasi `daftarWadah`, `wadah`, `itemWadah`, `profil`, `daftarNotifikasi`, dan `hapusNotifikasi` untuk membaca data. Operasi `konfirmasiAlokasi`, `ubahJumlahItem`, `hapusItem`, `mulaiFermentasi`, `gantiNama`, `hapusWadah`, `centangChecklist`, `daftarkanPerangkat`, `lepasPerangkat`, `batalkanFermentasi`, dan `tandaiSudahDipanen` menulis atau mengubah data. Modul ini mengharapkan tabel/view, kebijakan akses, dan RPC Supabase tersedia di backend; fungsi internalnya memeriksa koneksi dan mengubah error backend menjadi pesan yang dapat ditampilkan UI.
-
-- **`js/notifikasi.js`** — mengelola data notifikasi yang digunakan oleh UI.
-  - `teksBadge` membatasi teks jumlah pada badge.
-  - `bacaParameterNotifikasi` membaca dan memvalidasi ID pada URL.
-  - `buatPusatNotifikasi(api)` menyediakan pemuatan daftar, langganan perubahan, dan tindakan membuka/menandai notifikasi melalui `api.js`.
-
-- **`js/deteksi.js`** — menjalankan deteksi sampah dari foto menggunakan ONNX Runtime Web.
-  - `parseLabels` dan `periksaLabel` membaca serta mencocokkan label model dengan data referensi.
-  - `rgbaKeFloat` dan fungsi internal pemrosesan gambar mengubah foto menjadi tensor.
-  - `ekstrakDeteksi` membaca keluaran model; `buatDetektor` memuat model dan menyediakan fungsi deteksi foto.
-  - Bergantung pada `assets/models/best.onnx`, `assets/labels/labels.txt`, dan objek runtime ONNX yang diberikan saat inisialisasi.
-
-- **`js/integrasi.js`** — lapisan penghubung/service yang mengimpor `core.js`, `alokasi.js`, `deteksi.js`, `notifikasi.js`, `wadah.js`, dan `api.js`.
-  - `buatIntegrasiSnapCompost` memuat data referensi, membuat API dan pusat notifikasi, lalu menyediakan fungsi deteksi.
-  - Mengembalikan layanan, termasuk `muatBeranda` dan `muatDetailWadah`, agar entry point UI dapat meminta data siap pakai.
-  - Memerlukan klien Supabase; deteksi foto juga memerlukan ONNX Runtime.
-
-### Data, model, dan konfigurasi
-
-- **`data/data-referensi-snapcompost.json`** — sumber nama/label sampah, resep, syarat bahan, rasio, langkah, alat, dan jadwal. Dibaca serta divalidasi oleh `core.js`.
-- **`assets/models/best.onnx`** — model yang digunakan oleh `deteksi.js`.
-- **`assets/labels/labels.txt`** — daftar label yang harus sesuai dengan model dan nama sampah pada JSON referensi.
-- **`.env.example`**: contoh variabel lingkungan untuk konfigurasi lokal. Salin menjadi `.env`, lalu isi `VITE_SUPABASE_URL` (URL dasar project, tanpa `/rest/v1/`) dan `VITE_SUPABASE_KEY` (key publishable/anon). File `.env` dikecualikan oleh `.gitignore`. Jangan pernah menaruh service-role key atau service account Firebase di variabel berawalan `VITE_` maupun di kode browser; keduanya hanya dipasang sebagai environment variable server di Vercel (`SUPABASE_SERVICE_ROLE_KEY`, `FIREBASE_SERVICE_ACCOUNT`).
-- **`.gitignore`** — mencegah konfigurasi Supabase lokal masuk ke Git.
-- **`.vscode/mcp.json`** — konfigurasi workspace VS Code; bukan bagian runtime aplikasi.
-
-## Hubungan modul dan alur aplikasi
+## Struktur proyek
 
 ```text
-Dasboard.html ──> tampilan prototipe (termasuk logika UI di dalam halaman)
-
-Entry point UI yang akan dibuat
-        │
-        └──> integrasi.js
-              ├──> core.js <── data-referensi-snapcompost.json
-              ├──> wadah.js
-              ├──> alokasi.js ──> api.js ──> Supabase
-              ├──> notifikasi.js ───────────> api.js
-              └──> deteksi.js <── model ONNX + labels.txt
+SnapCompost/
+├── api/                         # Endpoint server Vercel
+├── css/
+│   ├── base/                    # Reset, token, dan gaya dasar
+│   ├── components/              # Gaya komponen antarmuka
+│   ├── layout/                  # Struktur dan tata letak halaman
+│   └── pages/                   # Gaya khusus halaman
+├── js/
+│   ├── app/
+│   │   ├── auth.js              # Autentikasi dan sesi pengguna
+│   │   ├── bootstrap.js         # Inisialisasi aplikasi
+│   │   ├── firebase.js          # Konfigurasi layanan Firebase
+│   │   ├── main.js              # Entry point aplikasi
+│   │   ├── push-sambung.js      # Pendaftaran push notification
+│   │   └── supabase.js          # Konfigurasi klien Supabase
+│   ├── logic/                   # Aturan dan logika domain SnapCompost
+│   └── ui/
+│       ├── components/          # Komponen UI
+│       ├── core/                # Utilitas inti UI
+│       ├── pages/               # Pengendali halaman
+│       ├── services/            # Penghubung UI dengan layanan aplikasi
+│       └── main-ui.js           # Inisialisasi antarmuka
+├── public/
+│   ├── assets/                  # Aset statis dan model deteksi
+│   ├── icons/                   # Ikon PWA
+│   ├── data-referensi-snapcompost.json
+│   ├── manifest.json            # Web App Manifest
+│   └── sw.js                    # Service Worker
+├── .env.example                 # Contoh konfigurasi environment
+├── index.html                   # Dokumen utama aplikasi
+├── package.json                 # Dependensi dan script proyek
+├── vercel.json                  # Konfigurasi deployment Vercel
+└── vite.config.js               # Konfigurasi Vite
 ```
 
-Pada alur deteksi, foto diproses oleh `deteksi.js`, lalu hasilnya dapat dikonfirmasi menggunakan sesi scan di `core.js`. Pada alur input manual, saran nama, validasi jumlah, pemilihan resep, dan perhitungan bahan juga menggunakan `core.js`. Data wadah dan tindakan selanjutnya dipetakan oleh `wadah.js` atau `alokasi.js`; perubahan yang disimpan dikirim lewat `api.js`.
+## Persyaratan
 
-## Status integrasi saat ini
+Sebelum menjalankan proyek, siapkan:
 
-`Dasboard.html` masih merupakan prototipe mandiri: JavaScript UI berada di dalam halaman dan penyimpanan wadahnya menggunakan `localStorage`. Modul-modul di folder `js/` menyediakan aturan dan template layanan, tetapi **belum dipanggil langsung oleh dashboard**. Belum ada entry point browser yang membuat klien Supabase/ONNX, dan repositori ini belum menyertakan skema, migrasi, kebijakan akses, atau fungsi RPC backend. Karena itu, konfigurasi Supabase saja belum membuat data dashboard tersambung ke server.
+- Node.js versi LTS, disarankan Node.js 20 atau lebih baru.
+- npm yang tersedia bersama instalasi Node.js.
+- Proyek Supabase untuk autentikasi dan penyimpanan data.
+- Git untuk mengunduh repository.
+- Browser modern seperti Google Chrome, Microsoft Edge, atau Firefox.
 
-Sebelum integrasi penuh diaktifkan, siapkan backend yang memenuhi kontrak di `js/api.js`, konfigurasi klien memakai publishable/anon key, lalu buat entry point yang menghubungkan layanan `integrasi.js` ke elemen UI. Runtime ONNX juga perlu disediakan bila fitur deteksi foto hendak memakai model lokal.
+Firebase hanya diperlukan apabila fitur push notification akan digunakan.
+
+## Instalasi
+
+### 1. Clone repository
+
+```bash
+git clone https://github.com/kuchikamikaze/SnapCompost.git
+cd SnapCompost
+```
+
+### 2. Instal dependensi
+
+```bash
+npm install
+```
+
+### 3. Buat konfigurasi environment
+
+Salin `.env.example` menjadi `.env`:
+
+```bash
+cp .env.example .env
+```
+
+Untuk Windows PowerShell:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Isi nilai berikut menggunakan konfigurasi proyek Supabase:
+
+```env
+VITE_SUPABASE_URL=https://PROJECT_ID.supabase.co
+VITE_SUPABASE_KEY=SUPABASE_ANON_OR_PUBLISHABLE_KEY
+```
+
+> Gunakan hanya anon key atau publishable key pada variabel yang diawali `VITE_`. Variabel tersebut akan dimasukkan ke bundle frontend dan dapat dilihat oleh browser.
+
+Jangan menaruh credential berikut di dalam `.env` frontend atau source code:
+
+- `SUPABASE_SERVICE_ROLE_KEY`
+- Firebase service account JSON
+- private key atau credential administratif lainnya
+
+Credential server harus disimpan sebagai environment variable pada Vercel atau platform server yang digunakan.
+
+### 4. Jalankan development server
+
+```bash
+npm run dev
+```
+
+Buka alamat yang ditampilkan Vite, umumnya:
+
+```text
+http://localhost:5173
+```
+
+Jangan menjalankan aplikasi dengan membuka `index.html` secara langsung melalui `file://`, karena ES Modules, Service Worker, model, dan data referensi memerlukan HTTP server.
+
+## Build produksi
+
+Buat build produksi dengan:
+
+```bash
+npm run build
+```
+
+Jalankan hasil build secara lokal untuk pemeriksaan akhir:
+
+```bash
+npm run preview
+```
+
+Folder hasil build Vite biasanya berada di `dist/`.
+
+## Konfigurasi backend
+
+Frontend SnapCompost membutuhkan backend Supabase yang sesuai dengan kontrak data dan operasi yang digunakan aplikasi. Backend perlu menyediakan setidaknya:
+
+- tabel profil pengguna;
+- tabel wadah kompos;
+- tabel item atau bahan di dalam wadah;
+- data checklist;
+- data notifikasi;
+- penyimpanan token perangkat;
+- RPC atau endpoint untuk operasi yang perlu dijalankan secara atomik;
+- Row-Level Security (RLS) untuk membatasi akses berdasarkan pemilik data.
+
+Repository ini belum dapat dianggap reproducible hanya dengan mengisi `.env` apabila schema, migration, RPC, trigger, dan kebijakan RLS belum tersedia. Simpan seluruh definisi backend dalam migration Supabase agar environment development, staging, dan production dapat dibuat secara konsisten.
+
+Struktur yang disarankan:
+
+```text
+supabase/
+├── config.toml
+├── migrations/
+└── seed.sql
+```
+
+## Deteksi gambar
+
+SnapCompost menjalankan deteksi foto menggunakan ONNX Runtime Web. Model, label, dan data referensi harus tetap konsisten.
+
+Alur deteksi:
+
+1. Pengguna mengambil atau memilih foto.
+2. Foto diproses menjadi tensor input.
+3. Model ONNX menghasilkan kandidat label dan confidence score.
+4. Pengguna mengonfirmasi hasil deteksi.
+5. Logika SnapCompost menentukan resep, syarat, dan perlakuan.
+6. Bahan dialokasikan ke wadah baru atau wadah yang sudah tersedia.
+
+Apabila model gagal dimuat, label tidak dikenali, atau confidence terlalu rendah, aplikasi harus tetap menyediakan input manual.
+
+## Progressive Web App
+
+SnapCompost menyediakan:
+
+- `public/manifest.json` untuk metadata instalasi;
+- `public/sw.js` untuk Service Worker;
+- ikon aplikasi di `public/icons/`;
+- dukungan deployment HTTPS melalui Vercel.
+
+Untuk menguji PWA:
+
+1. Jalankan build produksi.
+2. Buka aplikasi melalui HTTPS atau `localhost`.
+3. Buka Chrome DevTools.
+4. Periksa menu **Application > Manifest**.
+5. Periksa registrasi Service Worker.
+6. Jalankan audit menggunakan Lighthouse.
+7. Uji instalasi, pembaruan versi, offline fallback, dan penghapusan cache lama.
+
+Hindari menyimpan response autentikasi, data pribadi, atau request Supabase secara permanen di Cache Storage.
+
+## Deployment ke Vercel
+
+1. Hubungkan repository GitHub ke Vercel.
+2. Pilih framework preset Vite.
+3. Tambahkan environment variable frontend:
+
+```text
+VITE_SUPABASE_URL
+VITE_SUPABASE_KEY
+```
+
+4. Tambahkan credential server hanya jika endpoint di folder `api/` membutuhkannya, misalnya:
+
+```text
+SUPABASE_SERVICE_ROLE_KEY
+FIREBASE_SERVICE_ACCOUNT
+```
+
+5. Deploy aplikasi.
+6. Periksa autentikasi, endpoint API, database, model ONNX, Service Worker, dan push notification pada domain produksi.
+
+Jangan menggunakan service-role key pada kode browser.
+
+## Pengembangan
+
+Saat menambahkan fitur:
+
+1. Simpan aturan kompos dan perhitungan di `js/logic/`.
+2. Simpan manipulasi DOM dan tampilan di `js/ui/`.
+3. Simpan bootstrap dan konfigurasi layanan eksternal di `js/app/`.
+4. Jangan menaruh business logic langsung di komponen UI.
+5. Validasi data dari form, file JSON, response API, dan hasil model.
+6. Pastikan setiap operasi data memeriksa sesi serta kepemilikan pengguna.
+7. Sertakan loading, empty, error, offline, dan retry state.
+
+## Pengujian yang disarankan
+
+Gunakan Vitest untuk unit test dan Playwright untuk end-to-end test.
+
+Prioritas pengujian:
+
+- konversi satuan dan validasi jumlah;
+- pemilihan resep dan perlakuan khusus;
+- perhitungan bahan pendukung;
+- status dan jadwal fermentasi;
+- checklist wadah;
+- transaksi alokasi yang tidak boleh terduplikasi;
+- isolasi data antar pengguna melalui RLS;
+- fallback input manual;
+- instalasi dan pembaruan PWA;
+- alur notifikasi dan push notification.
+
+## Keamanan
+
+- Aktifkan RLS pada seluruh tabel yang dapat diakses frontend.
+- Gunakan `auth.uid()` untuk memeriksa pemilik data.
+- Jangan mempercayai `user_id` yang dikirim browser tanpa verifikasi server.
+- Simpan service-role key dan Firebase service account hanya di server.
+- Batasi ukuran dan tipe file gambar.
+- Validasi seluruh payload endpoint `api/`.
+- Hindari mencatat access token, refresh token, atau credential pada log.
+- Batasi origin, rate, dan metode HTTP untuk endpoint sensitif.
+
+## Pemecahan masalah
+
+### Halaman kosong setelah aplikasi dijalankan
+
+- Buka Console pada DevTools.
+- Pastikan aplikasi dijalankan melalui `npm run dev`.
+- Periksa path import ES Modules.
+- Pastikan environment variable yang diperlukan tersedia.
+
+### Gagal terhubung ke Supabase
+
+- Periksa `VITE_SUPABASE_URL`.
+- Pastikan key yang digunakan adalah anon atau publishable key.
+- Periksa kebijakan RLS.
+- Periksa tab Network untuk melihat status dan response request.
+
+### Model deteksi tidak dapat dimuat
+
+- Pastikan file model tersedia di lokasi yang digunakan aplikasi.
+- Pastikan label model sesuai dengan data referensi.
+- Periksa MIME type dan path file pada tab Network.
+- Hapus cache Service Worker apabila browser masih memakai aset versi lama.
+
+### Perubahan frontend tidak muncul
+
+- Lakukan hard refresh.
+- Unregister Service Worker melalui DevTools.
+- Hapus Cache Storage versi lama.
+- Jalankan ulang development server.
+
+## Status proyek
+
+SnapCompost masih dalam tahap pengembangan aktif. Beberapa bagian, terutama schema database, migration, kebijakan RLS, RPC backend, automated testing, dan validasi PWA lintas perangkat, perlu diselesaikan sebelum aplikasi digunakan secara luas pada lingkungan produksi.
+
+## Lisensi
+
+Lisensi proyek belum dicantumkan. Tambahkan file `LICENSE` sebelum mendistribusikan, memublikasikan ulang, atau menerima kontribusi eksternal secara resmi.
+
+## Repository
+
+[github.com/kuchikamikaze/SnapCompost](https://github.com/kuchikamikaze/SnapCompost)
